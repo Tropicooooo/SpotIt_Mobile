@@ -1,6 +1,6 @@
 import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
-import MapView, { Marker, Callout } from 'react-native-maps';
+import { StyleSheet, View } from 'react-native';
+import MapView, { Marker } from 'react-native-maps'; // Assurez-vous d'importer MapView et Marker correctement
 import { Ionicons } from '@expo/vector-icons';
 
 const MapComponent = ({ region, markers, onRegionChangeComplete, ...props }) => {
@@ -64,19 +64,6 @@ const styles = StyleSheet.create({
   map: {
     width: '100%',
     height: '100%',
-  },
-  calloutContainer: {
-    padding: 10,
-    width: 150,
-    minWidth: 120,
-  },
-  reportText: {
-    fontWeight: 'bold',
-    marginBottom: 5,
-  },
-  reportDate: {
-    fontStyle: 'italic',
-    color: '#555',
   },
 });
 

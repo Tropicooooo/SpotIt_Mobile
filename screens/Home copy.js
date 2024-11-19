@@ -3,22 +3,29 @@ import { StyleSheet, View, Text, TouchableOpacity, Modal, Pressable } from 'reac
 import { Ionicons } from '@expo/vector-icons';
 import { Provider, FAB } from 'react-native-paper';
 import MapComponent from '../components/Map';
-import User from '../components/User';
+import { Dimensions } from 'react-native';
+import User from "../components/User";
+import Reports from '../components/Report';
 import * as Location from 'expo-location';
-import { fetchMarkers } from '../components/Report'; // Import de la fonction
 import colors from '../constants/colors';
+import MultiSlider from '@ptomasroos/react-native-multi-slider';
+
+const { width } = Dimensions.get('window');
+const iconSize = 30;
 
 export default function Home({ navigation }) {
   const [region, setRegion] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
-  const [markers, setMarkers] = useState([]);
+  const [markers, setMarkers] = useState([]); // Marqueurs sur la carte
   const [userName, setUserName] = useState("Chargement...");
   const [modalVisible, setModalVisible] = useState(false);
   const [isFabOpen, setIsFabOpen] = useState(false);
-  const [filterType, setFilterType] = useState(null);
-  const [filterStatus, setFilterStatus] = useState(null);
-  const [importanceMin, setImportanceMin] = useState(1);
-  const [importanceMax, setImportanceMax] = useState(5);
+  const [filter, setFilter] = useState(null);
+  const [filterType, setFilterType] = useState(null); // Filtre "Type de problème"
+  const [filterStatus, setFilterStatus] = useState(null); // Filtre "Statut"
+  const [importanceMin, setImportanceMin] = useState(1); // Importance minimale
+  const [importanceMax, setImportanceMax] = useState(5); // Importance maximale
+
 
   const handleNameFetched = (name) => {
     setUserName(name);
@@ -45,30 +52,17 @@ export default function Home({ navigation }) {
     getLocation();
   }, []);
 
-  // Fonction pour actualiser les marqueurs
   const refreshMarkers = async () => {
-    if (!region) return;
-
-    try {
-      const data = await fetchMarkers({
-        region,
-        filterType,
-        filterStatus,
-        importanceMin,
-        importanceMax,
-      });
-
-      setMarkers(data);
-      console.log("Marqueurs mis à jour :", data);
-    } catch (error) {
-      console.error("Erreur lors de l'actualisation des marqueurs :", error);
-    }
+    // Exemple d'appel pour récupérer les signalements filtrés
+    const data = await Reports.fetchReports({
+      region,
+      filterType,
+      filterStatus,
+      importanceMin,
+      importanceMax,
+    });
+    setMarkers(data); // Mettre à jour les marqueurs affichés
   };
-
-  // Actualisation automatique lorsque les filtres ou la région changent
-  useEffect(() => {
-    refreshMarkers();
-  }, [region, filterType, filterStatus, importanceMin, importanceMax]);
 
   if (errorMsg) {
     return (
@@ -89,19 +83,23 @@ export default function Home({ navigation }) {
   return (
     <Provider>
       <View style={styles.container}>
-        {/* Barre supérieure */}
         <View style={styles.topBar}>
+          {/* Profil */}
+
           <View style={styles.profileSection}>
             <User onNameFetched={handleNameFetched} />
             <Text style={styles.profileName}>{userName}</Text>
           </View>
+
+          {/* Menu */}
           <Pressable style={styles.menuButton}>
-            <Ionicons name="menu" size={30} color="green" onPress={() => setModalVisible(true)} />
+            <Ionicons name="menu" size={iconSize} color="green" onPress={() => setModalVisible(true)} />
           </Pressable>
         </View>
+
         {/* Carte */}
         <View style={styles.mapWrapper}>
-          
+
           <MapComponent
             region={region}
             markers={markers}
@@ -110,35 +108,47 @@ export default function Home({ navigation }) {
             rotateEnabled
             pitchEnabled
           />
-           {/* Filtre de recherche */}
-           <FAB.Group
-                    open={isFabOpen}
-                    icon={isFabOpen ? 'close' : 'filter-outline'}
-                    actions={[
-                      {
-                        icon: 'format-list-bulleted',
-                        label: 'Type',
-                        onPress: () => setFilterType('ExampleType'), // Met à jour le filtre "Type"
-                      },
-                      {
-                        icon: 'check-circle-outline',
-                        label: 'Statut',
-                        onPress: () => setFilterStatus('ExampleStatus'), // Met à jour le filtre "Statut"
-                      },
-                      {
-                        icon: 'tune',
-                        label: "Niveau d'importance",
-                        onPress: () => setFilter("Niveau d'importance"), // Ouvre le modal pour le niveau d'importance
-                      }            
-                    ]}
-                    onStateChange={({ open }) => setIsFabOpen(open)}
-                    visible
-                    color={"white"}
-                    style={styles.fabContainer}
-                    fabStyle={styles.fabGroup}
-                  />
+        {/* Filtre de recherche */}
+        <FAB.Group
+          open={isFabOpen}
+          icon={isFabOpen ? 'close' : 'filter-outline'}
+          actions={[
+            {
+              icon: 'format-list-bulleted',
+              label: 'Type',
+              onPress: () => setFilterType('ExampleType'), // Met à jour le filtre "Type"
+            },
+            {
+              icon: 'check-circle-outline',
+              label: 'Statut',
+              onPress: () => setFilterStatus('ExampleStatus'), // Met à jour le filtre "Statut"
+            },
+            {
+              icon: 'tune',
+              label: "Niveau d'importance",
+              onPress: () => setFilter("Niveau d'importance"), // Ouvre le modal pour le niveau d'importance
+            }            
+          ]}
+          onStateChange={({ open }) => setIsFabOpen(open)}
+          visible
+          color={"white"}
+          style={styles.fabContainer}
+          fabStyle={styles.fabGroup}
+        />
+
         </View>
-         
+          
+          {/* Récupération des signalements */}
+        <Reports
+          region={region}
+          onReportsFetched={(data) => {
+            setMarkers(data);
+          }}
+          filterType={filterType}
+          filterStatus={filterStatus}
+          importanceMin={importanceMin}
+          importanceMax={importanceMax}
+        />
 
         {/* Bouton de signalement */}
         <TouchableOpacity
@@ -147,35 +157,63 @@ export default function Home({ navigation }) {
         >
           <Text style={styles.reportButtonText}>Signaler un problème</Text>
         </TouchableOpacity>
-
-      
-        {/* Menu Modal */}
-        <Modal
-          transparent
-          visible={modalVisible}
-          animationType="slide"
-          onRequestClose={() => setModalVisible(false)}
-        >
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalText}>À propos</Text>
-              <Text style={styles.modalText}>Contact</Text>
-              <Text style={styles.modalText}>Déconnexion</Text>
-              <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeButton}>
-                <Text style={styles.closeButtonText}>Fermer</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
       </View>
-       {/* Bouton d'actualisation */}
-       <TouchableOpacity onPress={refreshMarkers} style={styles.refreshButton}>
-          <Text style={styles.refreshButtonText}>Actualiser</Text>
+
+        {/* Bouton actualisation */}
+        <TouchableOpacity
+         onPress={refreshMarkers}
+        >
+          <Text >Actualiser</Text>
         </TouchableOpacity>
 
+      {/* filtre fab */}
+      <Modal visible={filter === "Niveau d'importance"} transparent>
+        <View style={styles.filtreLevel}>
+          <Text style={styles.sliderLabel}>Sélectionne le niveau d'importance :</Text>
+          <MultiSlider
+            values={[importanceMin, importanceMax]} // Valeurs actuelles
+            onValuesChange={(values) => {
+              setImportanceMin(values[0]);
+              setImportanceMax(values[1]);
+            }} // Met à jour les valeurs
+            min={1} // Valeur minimale
+            max={5} // Valeur maximale
+            step={1} // Incrémentation par pas de 1
+            allowOverlap={false} // Empêche le chevauchement des curseurs
+            snapped // Les curseurs s'alignent sur les valeurs entières
+            selectedStyle={{ backgroundColor: 'green' }} // Style de la barre sélectionnée
+            markerStyle={{ backgroundColor: 'green' }} // Style des curseurs
+          />
+          <TouchableOpacity
+          style={styles.filtreLevelButton}
+          onPress={() => setFilter(null)}
+          >
+          <Text style={styles.filtreLevelButtonText}>Appliquer</Text>
+        </TouchableOpacity>
+        </View>
+      </Modal>
+
+      {/* Menu option */}
+      <Modal
+        transparent
+        visible={modalVisible}
+        animationType="slide"
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalText}>A propos</Text>
+            <Text style={styles.modalText}>Contact</Text>
+            <Text style={styles.modalText}>Déconnexion</Text>
+            <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeButton}>
+              <Text style={styles.closeButtonText}>Fermer</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </Provider>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },

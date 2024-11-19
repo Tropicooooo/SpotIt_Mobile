@@ -113,7 +113,7 @@ export default function Report({ navigation }) {
           description: description,
           latitude: region.latitude,
           longitude: region.longitude,
-          
+          importance: 1,
         }),
       });
   
@@ -146,7 +146,7 @@ export default function Report({ navigation }) {
       {/* Bouton de retour */}
       <TouchableOpacity
         style={styles.backButton}
-        onPress={() => navigation.navigate('HomeScreen')}
+        onPress={() => navigation.navigate('HomeScreen', { refresh: false })}
       >
         <Ionicons name="arrow-back-outline" size={iconSize} color={colors.primary} />
       </TouchableOpacity>
