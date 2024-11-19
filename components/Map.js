@@ -30,9 +30,9 @@ const MapComponent = ({ region, markers, onRegionChangeComplete, ...props }) => 
     <View style={styles.mapContainer}>
       <MapView
         region={region}
-        onRegionChangeComplete={onRegionChangeComplete}
         style={styles.map}
         customMapStyle={defaultMapStyle}
+        onRegionChangeComplete={onRegionChangeComplete}  // Attache l'événement ici
         {...props}
       >
         {markers.map((marker, index) => (

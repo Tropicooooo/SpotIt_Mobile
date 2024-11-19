@@ -7,6 +7,7 @@ import User from '../components/User';
 import * as Location from 'expo-location';
 import { fetchMarkers } from '../components/Report'; // Import de la fonction
 import colors from '../constants/colors';
+import MultiSlider from '@ptomasroos/react-native-multi-slider';
 
 export default function Home({ navigation }) {
   const [region, setRegion] = useState(null);
@@ -15,10 +16,11 @@ export default function Home({ navigation }) {
   const [userName, setUserName] = useState("Chargement...");
   const [modalVisible, setModalVisible] = useState(false);
   const [isFabOpen, setIsFabOpen] = useState(false);
-  const [filterType, setFilterType] = useState(null);
-  const [filterStatus, setFilterStatus] = useState(null);
-  const [importanceMin, setImportanceMin] = useState(1);
-  const [importanceMax, setImportanceMax] = useState(5);
+  const [filter, setFilter] = useState(null);
+  const [filterType, setFilterType] = useState(null); // Filtre "Type de problème"
+  const [filterStatus, setFilterStatus] = useState(null); // Filtre "Statut"
+  const [importanceMin, setImportanceMin] = useState(1); // Importance minimale
+  const [importanceMax, setImportanceMax] = useState(5); // Importance maximale
 
   const handleNameFetched = (name) => {
     setUserName(name);
@@ -35,23 +37,38 @@ export default function Home({ navigation }) {
 
       const location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High });
       const { latitude, longitude } = location.coords;
-      setRegion({
+      const userRegion = {
         latitude,
         longitude,
         latitudeDelta: 0.005,
         longitudeDelta: 0.005,
-      });
+      };
+      setRegion(userRegion);
+
+      // Charger les marqueurs après avoir récupéré la localisation
+      try {
+        const data = await fetchMarkers({
+          region: userRegion,
+          filterType,
+          filterStatus,
+          importanceMin,
+          importanceMax,
+        });
+        setMarkers(data);
+        console.log("Marqueurs au lancement :", data);
+      } catch (error) {
+        console.error("Erreur lors de la récupération des marqueurs :", error);
+      }
     };
     getLocation();
-  }, []);
+  }, [filterType, filterStatus, importanceMin, importanceMax]); // Ajouter les filtres pour les actualisations
+
 
   // Fonction pour actualiser les marqueurs
   const refreshMarkers = async () => {
-    if (!region) return;
-
     try {
       const data = await fetchMarkers({
-        region,
+        region: region,
         filterType,
         filterStatus,
         importanceMin,
@@ -65,11 +82,11 @@ export default function Home({ navigation }) {
     }
   };
 
-  // Actualisation automatique lorsque les filtres ou la région changent
-  useEffect(() => {
-    refreshMarkers();
-  }, [region, filterType, filterStatus, importanceMin, importanceMax]);
-
+  const handleRegionChangeComplete = (newRegion) => {
+    setRegion(newRegion);
+  };
+  
+  
   if (errorMsg) {
     return (
       <View style={styles.container}>
@@ -102,14 +119,16 @@ export default function Home({ navigation }) {
         {/* Carte */}
         <View style={styles.mapWrapper}>
           
-          <MapComponent
-            region={region}
-            markers={markers}
-            scrollEnabled
-            zoomEnabled
-            rotateEnabled
-            pitchEnabled
-          />
+         <MapComponent
+          region={region}
+          onRegionChangeComplete={handleRegionChangeComplete}
+          markers={markers}
+          scrollEnabled
+          zoomEnabled
+          rotateEnabled
+          pitchEnabled
+        />
+
            {/* Filtre de recherche */}
            <FAB.Group
                     open={isFabOpen}
@@ -148,7 +167,33 @@ export default function Home({ navigation }) {
           <Text style={styles.reportButtonText}>Signaler un problème</Text>
         </TouchableOpacity>
 
-      
+
+        {/* filtre fab */}
+        <Modal visible={filter === "Niveau d'importance"} transparent>
+          <View style={styles.filtreLevel}>
+            <Text style={styles.sliderLabel}>Sélectionne le niveau d'importance :</Text>
+            <MultiSlider
+              values={[importanceMin, importanceMax]} // Valeurs actuelles
+              onValuesChange={(values) => {
+                setImportanceMin(values[0]);
+                setImportanceMax(values[1]);
+              }} // Met à jour les valeurs
+              min={1} // Valeur minimale
+              max={5} // Valeur maximale
+              step={1} // Incrémentation par pas de 1
+              allowOverlap={false} // Empêche le chevauchement des curseurs
+              snapped // Les curseurs s'alignent sur les valeurs entières
+              selectedStyle={{ backgroundColor: 'green' }} // Style de la barre sélectionnée
+              markerStyle={{ backgroundColor: 'green' }} // Style des curseurs
+            />
+            <TouchableOpacity
+            style={styles.filtreLevelButton}
+            onPress={() => setFilter(null)}
+            >
+            <Text style={styles.filtreLevelButtonText}>Appliquer</Text>
+          </TouchableOpacity>
+          </View>
+        </Modal>
         {/* Menu Modal */}
         <Modal
           transparent

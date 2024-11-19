@@ -23,7 +23,7 @@ export const fetchMarkers = async ({ region, filterType = null, filterStatus = n
   });
 
   const url = `http://192.168.1.46:3001/problem?${queryParams}`;
-
+  console.log("URL de la requête API :", url);
   try {
     const response = await fetch(url);
     if (!response.ok) {
