@@ -19,10 +19,10 @@ export default function Home({ navigation }) {
   const [filter, setFilter] = useState(null);
   const [filterType, setFilterType] = useState(null); // Filtre "Type de problème"
   const [filterStatus, setFilterStatus] = useState(null); // Filtre "Statut"
-  const [tempImportanceMin, setTempImportanceMin] = useState(1); // Valeurs temporaires
-  const [tempImportanceMax, setTempImportanceMax] = useState(5);
-  const [importanceMin, setImportanceMin] = useState(1); // Importance minimale
-  const [importanceMax, setImportanceMax] = useState(5); // Importance maximale
+  const [tempEmergencyDegreeMin, setTempEmergencyDegreeMin] = useState(1); // Valeurs temporaires
+  const [tempEmergencyDegreeMax, setTempEmergencyDegreeMax] = useState(5);
+  const [emergencyDegreeMin, setEmergencyDegreeMin] = useState(1); // Importance minimale
+  const [emergencyDegreeMax, setEmergencyDegreeMax] = useState(5); // Importance maximale
 
   const handleNameFetched = (name) => {
     setUserName(name);
@@ -53,8 +53,8 @@ export default function Home({ navigation }) {
           region: userRegion,
           filterType,
           filterStatus,
-          importanceMin,
-          importanceMax,
+          emergencyDegreeMin,
+          emergencyDegreeMax,
         });
         setMarkers(data);
         console.log("Marqueurs au lancement :", data);
@@ -63,7 +63,7 @@ export default function Home({ navigation }) {
       }
     };
     getLocation();
-  }, [filterType, filterStatus, importanceMin, importanceMax]); // Ajouter les filtres pour les actualisations
+  }, [filterType, filterStatus, emergencyDegreeMin, emergencyDegreeMax]); // Ajouter les filtres pour les actualisations
 
 
   // Fonction pour actualiser les marqueurs
@@ -73,8 +73,8 @@ export default function Home({ navigation }) {
         region: region,
         filterType,
         filterStatus,
-        importanceMin,
-        importanceMax,
+        emergencyDegreeMin,
+        emergencyDegreeMax,
       });
 
       setMarkers(data);
@@ -89,8 +89,8 @@ export default function Home({ navigation }) {
   };
   
   const handleApplyFilters = () => {
-    setImportanceMin(tempImportanceMin);
-    setImportanceMax(tempImportanceMax);
+    setTempEmergencyDegreeMin(setTempEmergencyDegreeMin);
+    setEmergencyDegreeMax(setTempEmergencyDegreeMax);
     setFilter(null); // Fermer le modal
     refreshMarkers(); // Actualiser les marqueurs avec les nouveaux filtres
   };
@@ -181,10 +181,10 @@ export default function Home({ navigation }) {
           <View style={styles.filtreLevel}>
             <Text style={styles.sliderLabel}>Sélectionne le niveau d'importance :</Text>
            <MultiSlider
-            values={[tempImportanceMin, tempImportanceMax]} // Utilise les valeurs temporaires
+            values={[tempEmergencyDegreeMin, tempEmergencyDegreeMax]} // Utilise les valeurs temporaires
             onValuesChange={(values) => {
-              setTempImportanceMin(values[0]);
-              setTempImportanceMax(values[1]);
+              setEmergencyDegreeMin(values[0]);
+              setEmergencyDegreeMax(values[1]);
             }}
             min={1}
             max={5}

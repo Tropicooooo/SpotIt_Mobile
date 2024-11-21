@@ -221,7 +221,7 @@ export default function Report({ navigation }) {
         >
           {problemTypes.map((type, index) => (
             <TouchableOpacity
-              key={type.label}  // Utilisation de l'ID unique du type de problème
+              key={type.label}  // Utilisation du label unique du type de problème
               style={[styles.rectangle, { backgroundColor: checked[index] ? colors.primary : colors.secondary }]}
               onPress={() => handleRectangleSelection(index)}
             >
@@ -236,7 +236,7 @@ export default function Report({ navigation }) {
               <Text
                 style={[styles.rectangleText, { color: checked[index] ? colors.secondary : colors.primary }]}
               >
-                {type.name} {/* Affichage du nom du type de problème */}
+                {type.description} {/* Affichage du nom du type de problème */}
               </Text>
             </TouchableOpacity>
           ))}

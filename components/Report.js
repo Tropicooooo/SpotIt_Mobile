@@ -1,4 +1,4 @@
-export const fetchMarkers = async ({ region, filterType = null, filterStatus = null, importanceMin = 0, importanceMax = 5 }) => {
+export const fetchMarkers = async ({ region, filterType = null, filterStatus = null, emergencyDegreeMin = 0, emergencyDegreeMax = 5 }) => {
   if (!region) {
     throw new Error("Aucune région définie pour récupérer les marqueurs.");
   }
@@ -18,10 +18,10 @@ export const fetchMarkers = async ({ region, filterType = null, filterStatus = n
     lngMax,
     ...(filterType ? { type: filterType } : {}),
     ...(filterStatus ? { status: filterStatus } : {}),
-    importanceMin,
-    importanceMax,
+    emergencyDegreeMin,
+    emergencyDegreeMax,
   });
-
+  
   const url = `http://192.168.1.46:3001/problem?${queryParams}`;
   console.log("URL de la requête API :", url);
   try {
