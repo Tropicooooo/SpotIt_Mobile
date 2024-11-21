@@ -6,6 +6,7 @@ import { useActionSheet } from '@expo/react-native-action-sheet';
 import MapComponent from '../components/Map';
 import * as Location from 'expo-location';
 import colors from '../constants/colors'; // Chemin vers le fichier de couleurs
+import ProblemType from '../components/ProblemType';  // Import du composant qui récupère les types de problèmes
 
 const iconSize = 28;
 
@@ -14,9 +15,9 @@ export default function Report({ navigation }) {
   const [image, setImage] = useState(null);
   const [region, setRegion] = useState(null);
   const [address, setAddress] = useState('');  // Nouvel état pour l'adresse
+  const [problemTypes, setProblemTypes] = useState([]);  // État pour les types de problèmes
   const { showActionSheetWithOptions } = useActionSheet();
   const [checked, setChecked] = useState({});
-
 
   useEffect(() => {
     const getLocation = async () => {
@@ -95,51 +96,65 @@ export default function Report({ navigation }) {
   };
 
   const handleRectangleSelection = (index) => {
-    setChecked((prev) => ({
-      ...prev,
-      [index]: !prev[index],
-    }));
+    const updatedChecked = {};
+    
+    // Désélectionne tous les problèmes
+    problemTypes.forEach((_, idx) => {
+      updatedChecked[idx] = false;
+    });
+    
+    // Sélectionne uniquement le problème sur l'index
+    updatedChecked[index] = true;
+  
+    // Met à jour l'état avec le nouvel objet checked
+    setChecked(updatedChecked);
   };
+  
 
   const handleSubmit = async () => {
-    try {
-      const response = await fetch("http://192.168.1.46:3001/problem", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          user_id: 1, // Toujours 1 pour cet exemple
-          description: description,
-          latitude: region.latitude,
-          longitude: region.longitude,
-          importance: 1,
-        }),
-      });
+    // Trouver l'index du type de problème sélectionné
+    const selectedIndex = Object.keys(checked).find(key => checked[key]);
   
-      if (response.ok) {
-        alert("Le problème a été signalé avec succès !");
-        // Réinitialise les champs après l'envoi
-        setDescription("");
-        setImage(null);
-        setChecked({});
-        
-        // Navigue vers le menu Home
-        navigation.navigate('HomeScreen');
-      } else {
-        const error = await response.json();
-        console.error("Erreur API :", error);
-        alert("Une erreur est survenue. Veuillez réessayer.");
+    // Si un problème a été sélectionné
+    if (selectedIndex !== undefined) {
+      const selectedProblemType = problemTypes[selectedIndex];
+      try {
+        const response = await fetch("http://192.168.1.46:3001/problem", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            description: description,
+            latitude: region.latitude,
+            longitude: region.longitude,
+            importance: 1,
+            problemTypeLabel: selectedProblemType.label,  // Ajouter le label du type de problème
+          }),
+        });
+  
+        if (response.ok) {
+          alert("Le problème a été signalé avec succès !");
+          navigation.navigate('HomeScreen');
+        } else {
+          const error = await response.json();
+          console.error("Erreur API :", error);
+          alert("Une erreur est survenue. Veuillez réessayer.");
+        }
+      } catch (err) {
+        console.error("Erreur réseau :", err);
+        alert("Erreur réseau. Vérifiez votre connexion.");
       }
-    } catch (err) {
-      console.error("Erreur réseau :", err);
-      alert("Erreur réseau. Vérifiez votre connexion.");
+    } else {
+      alert("Veuillez sélectionner un type de problème.");
     }
   };
   
-  
 
-  const rectangles = new Array(10).fill(null);
+  // Cette fonction est appelée lorsque les types de problème sont récupérés
+  const handleProblemTypesFetched = (data) => {
+    setProblemTypes(data);
+  };
 
   return (
     <View style={styles.container}>
@@ -150,7 +165,7 @@ export default function Report({ navigation }) {
       >
         <Ionicons name="arrow-back-outline" size={iconSize} color={colors.primary} />
       </TouchableOpacity>
-      
+
       {/* Affichage de la carte et du bouton pour choisir une image */}
       {region && (
         <View style={styles.mapWrapper}>
@@ -169,22 +184,22 @@ export default function Report({ navigation }) {
           />
           <TouchableOpacity style={styles.imageButton} onPress={handleChoosePhoto}>
             {image ? (
-              <Image  source={{ uri: image }} style={styles.image} />
+              <Image source={{ uri: image }} style={styles.image} />
             ) : (
               <Ionicons name="image-outline" size={60} color="green" />
             )}
           </TouchableOpacity>
         </View>
       )}
-        
-        {/* Contenu du formulaire */}
+
+      {/* Contenu du formulaire */}
       <ScrollView contentContainerStyle={styles.contentContainer}>
         <View style={styles.adresse}>
           <Ionicons name="location-outline" size={24} color={colors.primary} style={styles.iconSpacing} />
           <Text style={styles.labelText}>Adresse</Text>
         </View>
 
-        {/* Affichage de l'adresse juste en dessous du texte "Adresse" */}
+        {/* Affichage de l'adresse */}
         {address ? (
           <Text style={styles.addressText}>{address}</Text>
         ) : (
@@ -204,13 +219,10 @@ export default function Report({ navigation }) {
           contentContainerStyle={styles.rectanglesContent}
           showsHorizontalScrollIndicator={false}
         >
-          {rectangles.map((_, index) => (
+          {problemTypes.map((type, index) => (
             <TouchableOpacity
-              key={index}
-              style={[
-                styles.rectangle,
-                { backgroundColor: checked[index] ? colors.primary : colors.secondary },
-              ]}
+              key={type.label}  // Utilisation de l'ID unique du type de problème
+              style={[styles.rectangle, { backgroundColor: checked[index] ? colors.primary : colors.secondary }]}
               onPress={() => handleRectangleSelection(index)}
             >
               <Ionicons
@@ -222,14 +234,11 @@ export default function Report({ navigation }) {
                 }}
               />
               <Text
-                style={[
-                  styles.rectangleText,
-                  { color: checked[index] ? colors.secondary : colors.primary },
-                ]}
+                style={[styles.rectangleText, { color: checked[index] ? colors.secondary : colors.primary }]}
               >
-                Poubelle
+                {type.name} {/* Affichage du nom du type de problème */}
               </Text>
-            </TouchableOpacity> 
+            </TouchableOpacity>
           ))}
         </ScrollView>
 
@@ -250,6 +259,9 @@ export default function Report({ navigation }) {
           <Text style={styles.reportButtonText}>Signaler le problème</Text>
         </TouchableOpacity>
       </ScrollView>
+
+      {/* Récupération des types de problèmes */}
+      <ProblemType onTypeFetched={handleProblemTypesFetched} />
     </View>
   );
 }
