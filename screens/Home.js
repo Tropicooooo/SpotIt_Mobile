@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Modal, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Provider, FAB } from 'react-native-paper';
@@ -10,6 +10,8 @@ import colors from '../constants/colors';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
 
 export default function Home({ navigation }) {
+  const mapRef = useRef(null);
+
   const [region, setRegion] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [markers, setMarkers] = useState([]);
@@ -84,9 +86,10 @@ export default function Home({ navigation }) {
     }
   };
 
-  const handleRegionChangeComplete = (newRegion) => {
-    setRegion(newRegion);
-  };
+  //const handleRegionChangeComplete = (newRegion) => {
+   //  console.log("Nouvelle région :", newRegion);
+   //  setRegion(newRegion);
+   //};
   
   const handleApplyFilters = () => {
     setEmergencyDegreeMin(tempEmergencyDegreeMin);
@@ -94,6 +97,35 @@ export default function Home({ navigation }) {
     setFilter(null); // Fermer le modal
     refreshMarkers(); // Actualiser les marqueurs avec les nouveaux filtres
   };
+
+  const [isAnimating, setIsAnimating] = useState(false);
+
+const resetLocation = async () => {
+  if (isAnimating) return; // Empêche d'exécuter une nouvelle animation
+
+  setIsAnimating(true); // Démarre l'animation
+  try {
+    const location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High });
+    const { latitude, longitude } = location.coords;
+    const userRegion = {
+      latitude,
+      longitude,
+      latitudeDelta: 0.005,
+      longitudeDelta: 0.005,
+    };
+
+    if (mapRef.current) {
+      mapRef.current.animateToRegion(userRegion, 1000); // Anime la carte
+    }
+    setRegion(userRegion);
+  } catch (error) {
+    console.error("Erreur lors de la réinitialisation de la position :", error);
+  } finally {
+    setTimeout(() => setIsAnimating(false), 1000); // Laisse un délai avant de réactiver
+  }
+};
+
+  
 
   if (errorMsg) {
     return (
@@ -129,7 +161,8 @@ export default function Home({ navigation }) {
           
          <MapComponent
           region={region}
-          onRegionChangeComplete={handleRegionChangeComplete}
+          ref={mapRef}
+          //onRegionChangeComplete={handleRegionChangeComplete}
           markers={markers}
           scrollEnabled
           zoomEnabled
@@ -225,8 +258,13 @@ export default function Home({ navigation }) {
       </View>
        {/* Bouton d'actualisation */}
        <TouchableOpacity onPress={refreshMarkers} style={styles.refreshButton}>
-          <Text style={styles.refreshButtonText}>Actualiser</Text>
+          <Text style={styles.refreshMarkersButtonText}>Actualiser</Text>
         </TouchableOpacity>
+
+          {/* Bouton Recentrer */}
+      <TouchableOpacity onPress={resetLocation} style={[styles.resetLocationButton, styles.shadow]}>
+        <Text style={styles.resetLocationButtonText}>Recentrer</Text>
+      </TouchableOpacity>
 
     </Provider>
   );

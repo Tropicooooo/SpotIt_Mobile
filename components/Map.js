@@ -1,10 +1,9 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import MapView, { Marker } from 'react-native-maps'; // Assurez-vous d'importer MapView et Marker correctement
+import MapView, { Marker } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
 
-const MapComponent = ({ region, markers, onRegionChangeComplete, ...props }) => {
-  
+const MapComponent = React.forwardRef(({ region, markers, onRegionChangeComplete, ...props }, ref) => {
   const defaultMapStyle = [
     {
       "featureType": "poi",
@@ -30,9 +29,10 @@ const MapComponent = ({ region, markers, onRegionChangeComplete, ...props }) => 
     <View style={styles.mapContainer}>
       <MapView
         region={region}
+        ref={ref} // Transmettez la référence ici
         style={styles.map}
         customMapStyle={defaultMapStyle}
-        onRegionChangeComplete={onRegionChangeComplete}  // Attache l'événement ici
+        onRegionChangeComplete={onRegionChangeComplete}
         {...props}
       >
         {markers.map((marker, index) => (
@@ -43,23 +43,23 @@ const MapComponent = ({ region, markers, onRegionChangeComplete, ...props }) => 
               longitude: parseFloat(marker.longitude),
             }}
           >
-            <Ionicons 
-              name="location-sharp" 
-              size={35} 
-              color="green" 
+            <Ionicons
+              name="location-sharp"
+              size={35}
+              color="green"
             />
           </Marker>
         ))}
       </MapView>
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   mapContainer: {
     flex: 1,
-    borderRadius: 20, 
-    overflow: 'hidden', 
+    borderRadius: 20,
+    overflow: 'hidden',
   },
   map: {
     width: '100%',
