@@ -89,8 +89,8 @@ export default function Home({ navigation }) {
   };
   
   const handleApplyFilters = () => {
-    setTempEmergencyDegreeMin(setTempEmergencyDegreeMin);
-    setEmergencyDegreeMax(setTempEmergencyDegreeMax);
+    setEmergencyDegreeMin(tempEmergencyDegreeMin);
+    setEmergencyDegreeMax(tempEmergencyDegreeMax);
     setFilter(null); // Fermer le modal
     refreshMarkers(); // Actualiser les marqueurs avec les nouveaux filtres
   };
