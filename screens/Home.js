@@ -19,6 +19,8 @@ export default function Home({ navigation }) {
   const [filter, setFilter] = useState(null);
   const [filterType, setFilterType] = useState(null); // Filtre "Type de problème"
   const [filterStatus, setFilterStatus] = useState(null); // Filtre "Statut"
+  const [tempImportanceMin, setTempImportanceMin] = useState(1); // Valeurs temporaires
+  const [tempImportanceMax, setTempImportanceMax] = useState(5);
   const [importanceMin, setImportanceMin] = useState(1); // Importance minimale
   const [importanceMax, setImportanceMax] = useState(5); // Importance maximale
 
@@ -86,7 +88,13 @@ export default function Home({ navigation }) {
     setRegion(newRegion);
   };
   
-  
+  const handleApplyFilters = () => {
+    setImportanceMin(tempImportanceMin);
+    setImportanceMax(tempImportanceMax);
+    setFilter(null); // Fermer le modal
+    refreshMarkers(); // Actualiser les marqueurs avec les nouveaux filtres
+  };
+
   if (errorMsg) {
     return (
       <View style={styles.container}>
@@ -172,26 +180,28 @@ export default function Home({ navigation }) {
         <Modal visible={filter === "Niveau d'importance"} transparent>
           <View style={styles.filtreLevel}>
             <Text style={styles.sliderLabel}>Sélectionne le niveau d'importance :</Text>
-            <MultiSlider
-              values={[importanceMin, importanceMax]} // Valeurs actuelles
-              onValuesChange={(values) => {
-                setImportanceMin(values[0]);
-                setImportanceMax(values[1]);
-              }} // Met à jour les valeurs
-              min={1} // Valeur minimale
-              max={5} // Valeur maximale
-              step={1} // Incrémentation par pas de 1
-              allowOverlap={false} // Empêche le chevauchement des curseurs
-              snapped // Les curseurs s'alignent sur les valeurs entières
-              selectedStyle={{ backgroundColor: 'green' }} // Style de la barre sélectionnée
-              markerStyle={{ backgroundColor: 'green' }} // Style des curseurs
-            />
-            <TouchableOpacity
+           <MultiSlider
+            values={[tempImportanceMin, tempImportanceMax]} // Utilise les valeurs temporaires
+            onValuesChange={(values) => {
+              setTempImportanceMin(values[0]);
+              setTempImportanceMax(values[1]);
+            }}
+            min={1}
+            max={5}
+            step={1}
+            allowOverlap={false}
+            snapped
+            selectedStyle={{ backgroundColor: 'green' }}
+            markerStyle={{ backgroundColor: 'green' }}
+          />
+
+          <TouchableOpacity
             style={styles.filtreLevelButton}
-            onPress={() => setFilter(null)}
-            >
+            onPress={handleApplyFilters}
+          >
             <Text style={styles.filtreLevelButtonText}>Appliquer</Text>
           </TouchableOpacity>
+
           </View>
         </Modal>
         {/* Menu Modal */}

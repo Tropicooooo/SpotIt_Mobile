@@ -169,7 +169,7 @@ export default function Report({ navigation }) {
           />
           <TouchableOpacity style={styles.imageButton} onPress={handleChoosePhoto}>
             {image ? (
-              <Image source={{ uri: image }} style={styles.image} />
+              <Image  source={{ uri: image }} style={styles.image} />
             ) : (
               <Ionicons name="image-outline" size={60} color="green" />
             )}
