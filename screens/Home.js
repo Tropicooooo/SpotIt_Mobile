@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Modal, Pressable } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Modal, Pressable, FlatList } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Provider, FAB } from 'react-native-paper';
 import MapComponent from '../components/Map';
@@ -20,15 +20,48 @@ export default function Home({ navigation }) {
   const [isFabOpen, setIsFabOpen] = useState(false);
   const [filter, setFilter] = useState(null);
   const [filterType, setFilterType] = useState(null); // Filtre "Type de problème"
-  const [filterStatus, setFilterStatus] = useState(null); // Filtre "Statut"
+  const [filterStatus, setFilterStatus] = useState([]); // Filtre "Statut"
   const [tempEmergencyDegreeMin, setTempEmergencyDegreeMin] = useState(1); // Valeurs temporaires
   const [tempEmergencyDegreeMax, setTempEmergencyDegreeMax] = useState(5);
   const [emergencyDegreeMin, setEmergencyDegreeMin] = useState(1); // Importance minimale
   const [emergencyDegreeMax, setEmergencyDegreeMax] = useState(5); // Importance maximale
 
+  const status = [
+    { id: '1', name: 'En attente' },
+    { id: '2', name: 'En cours' },
+    { id: '3', name: 'Résolu' },
+  ];
+
   const handleNameFetched = (name) => {
     setUserName(name);
   };
+
+  const toggleSelectionFilterStatus = (id) => {
+    if (filterStatus.includes(id)) {
+      setFilterStatus(filterStatus.filter((item) => item !== id)); // Déselectionner
+    } else {
+      setFilterStatus([...filterStatus, id]); // Sélectionner
+    }
+  };
+
+  const renderStatus = ({ item }) => {
+    const isSelected = filterStatus.includes(item.id); // Vérifie si l'élément est sélectionné
+  
+    return (
+      <TouchableOpacity
+        onPress={() => toggleSelectionFilterStatus(item.id)} // Gère la sélection/désélection
+        style={[
+          styles.item, // Style par défaut
+          isSelected && styles.selectedItem, // Applique un style différent si sélectionné
+        ]}
+      >
+        <Text style={[styles.itemText, isSelected && styles.selectedItemText]}>
+          {item.name}
+        </Text>
+      </TouchableOpacity>
+    );
+  };
+  
 
   // Récupération de la localisation de l'utilisateur
   useEffect(() => {
@@ -183,8 +216,8 @@ const resetLocation = async () => {
                       {
                         icon: 'check-circle-outline',
                         label: 'Statut',
-                        onPress: () => setFilterStatus('ExampleStatus'), // Met à jour le filtre "Statut"
-                      },
+                        onPress: () => setFilter("Statut"), // Ouvre le modal pour le statut
+                      },                      
                       {
                         icon: 'tune',
                         label: "Niveau d'importance",
@@ -209,7 +242,7 @@ const resetLocation = async () => {
         </TouchableOpacity>
 
 
-        {/* filtre fab */}
+        {/* filtre niveau d'importance */}
         <Modal visible={filter === "Niveau d'importance"} transparent>
           <View style={styles.filtreLevel}>
             <Text style={styles.sliderLabel}>Sélectionne le niveau d'importance :</Text>
@@ -237,6 +270,26 @@ const resetLocation = async () => {
 
           </View>
         </Modal>
+
+        {/* filtre status */}
+        <Modal visible={filter === "Statut"} transparent>
+          <View style={styles.filtreStatut}>
+            <Text style={styles.filtreStatutLabel}>Sélectionne le ou les status</Text>
+            <FlatList
+              data={status}
+              keyExtractor={(item) => item.id}
+              renderItem={renderStatus}
+            />
+            <TouchableOpacity
+              style={styles.filtreStatutButton}
+              onPress={handleApplyFilters}
+            >
+              <Text style={styles.filtreStatutButtonText}>Appliquer</Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
+
+
         {/* Menu Modal */}
         <Modal
           transparent
@@ -368,5 +421,127 @@ const styles = StyleSheet.create({
   filtreLevelButtonText: {
     color: '#fff',
     fontSize: 18,
+  },
+  sliderLabel: {
+    fontSize: 18,
+    color: colors.primary,
+    marginBottom: 10,
+  },
+  filtreStatut: {
+    backgroundColor: 'white',
+    left: '5%',
+    right: '5%',
+    alignItems: 'center',
+    paddingHorizontal: '4%',
+    position: 'absolute',
+    borderRadius: 10,
+    elevation: 5,
+    top: '40%',
+  },
+  filtreStatutLabel: {
+    fontSize: 18,
+    color: 'green',
+    marginBottom: 10,
+  },
+  filtreStatutText: {
+    fontSize: 16,
+    color: colors.primary,
+    marginVertical: 5,
+  },
+  filtreStatutButton: {
+    backgroundColor: 'green',
+    borderRadius: 15,
+    paddingVertical: 8,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  filtreStatutButtonText: {
+    color: '#fff',
+    fontSize: 18,
+  },
+  filtreImportanceModal: {
+    backgroundColor: 'white',
+    color: 'green',
+    left: '5%',
+    right: '5%',
+    alignItems: 'center',
+    paddingHorizontal: '4%', 
+    position: 'absolute',
+    borderRadius: 10,
+    elevation: 5,
+    top: '40%',
+  },
+  filtreImportanceButton: {
+    position: 'absolute',
+    left: '10%',
+    right: '10%',
+    backgroundColor: 'green',
+    borderRadius: 15,
+    paddingVertical: 8,
+    alignItems: 'center',
+    top: '150%',
+  },
+  filtreImportanceButtonText: {
+    color: '#fff',
+    fontSize: 18,
+  },
+  sliderLabel: {
+    fontSize: 18,
+    color: colors.primary,
+    marginBottom: 10,
+  },
+
+  // Style pour le modal de sélection du statut
+  filtreStatutModal: {
+    backgroundColor: 'white',
+    left: '5%',
+    right: '5%',
+    alignItems: 'center',
+    paddingHorizontal: '4%',
+    position: 'absolute',
+    borderRadius: 10,
+    elevation: 5,
+    top: '40%',
+  },
+  filtreStatutLabel: {
+    fontSize: 18,
+    color: 'green',
+    marginBottom: 10,
+  },
+  filtreStatutText: {
+    fontSize: 16,
+    color: colors.primary,
+    marginVertical: 5,
+  },
+  filtreStatutButton: {
+    backgroundColor: 'green',
+    borderRadius: 15,
+    paddingVertical: 8,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  filtreStatutButtonText: {
+    color: '#fff',
+    fontSize: 18,
+  },
+
+  // Styles pour la sélection des statuts
+  selectedItem: {
+    backgroundColor: 'green', // Couleur de fond quand l'élément est sélectionné
+    borderColor: 'green',
+    borderWidth: 1,
+  },
+  item: {
+    padding: 10,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: 'grey', 
+    marginVertical: 5,
+  },
+  itemText: {
+    color: 'black', 
+  },
+  selectedItemText: {
+    color: 'white',
   },
 });
