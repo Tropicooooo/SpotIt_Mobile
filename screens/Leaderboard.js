@@ -10,9 +10,17 @@ export default function Leaderboard() {
     const fetchLeaderboard = async () => {
       try {
         const response = await fetch('http://192.168.1.46:3001/leaderboard');
-        
         const data = await response.json();
+  
         if (data && data.length > 0) {
+          // Ajouter un champ id basé sur email pour chaque utilisateur réel
+          const transformedUsers = data.map(user => ({
+            ...user,
+            id: user.email, // Utilisez `email` comme identifiant unique
+            name: `${user.firstname} ${user.lastname.charAt(0)}.`, //affiche firstname et une seule lettre du lastname
+          }));
+  
+          // Générer des utilisateurs fictifs pour compléter jusqu'à 10
           const fakeUsers = [];
           for (let i = data.length; i < 10; i++) {
             fakeUsers.push({
@@ -21,8 +29,9 @@ export default function Leaderboard() {
               experience: 0,
             });
           }
-
-          setUsers([...data, ...fakeUsers]); // Combine vrais utilisateurs et faux
+  
+          // Combine les vrais utilisateurs transformés avec les faux
+          setUsers([...transformedUsers, ...fakeUsers]);
         } else {
           // Si aucun utilisateur, créer 10 utilisateurs fictifs
           const fakeUsers = Array.from({ length: 10 }, (_, index) => ({
@@ -38,8 +47,10 @@ export default function Leaderboard() {
         setLoading(false);
       }
     };
+  
     fetchLeaderboard();
   }, []);
+  
   
 
   const renderPodium = () => {
@@ -47,17 +58,17 @@ export default function Leaderboard() {
         <View style={styles.podium}>
           <View style={styles.podiumUser}>
           <Image source={require('../images/profile.jpg')} style={styles.podiumImageSmall} />
-            <Text style={styles.podiumName}>{users[1].name} </Text>
+            <Text style={styles.podiumName}>{users[1].name}</Text>
             <Text style={styles.podiumPoints}>{users[1].experience} exp</Text>
           </View>
           <View style={styles.podiumUser}>
           <Image source={require('../images/profile.jpg')} style={styles.podiumImageLarge} />
-          <Text style={styles.podiumName}>{users[0].name} </Text>
+          <Text style={styles.podiumName}>{users[0].name}</Text>
           <Text style={styles.podiumPoints}>{users[0].experience} exp</Text>
           </View>
           <View style={styles.podiumUser}>
           <Image source={require('../images/profile.jpg')} style={styles.podiumImageSmall} />
-          <Text style={styles.podiumName}>{users[2].name} </Text>
+          <Text style={styles.podiumName}>{users[2].name}</Text>
           <Text style={styles.podiumPoints}>{users[2].experience} exp </Text>
           </View>
         </View>
