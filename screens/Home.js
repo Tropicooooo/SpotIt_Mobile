@@ -216,8 +216,8 @@ const resetLocation = async () => {
            <MultiSlider
             values={[tempEmergencyDegreeMin, tempEmergencyDegreeMax]} // Utilise les valeurs temporaires
             onValuesChange={(values) => {
-              setEmergencyDegreeMin(values[0]);
-              setEmergencyDegreeMax(values[1]);
+              setTempEmergencyDegreeMin(values[0]);
+              setTempEmergencyDegreeMax(values[1]);
             }}
             min={1}
             max={5}
