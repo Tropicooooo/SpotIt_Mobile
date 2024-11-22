@@ -20,7 +20,7 @@ export default function Home({ navigation }) {
   const [isFabOpen, setIsFabOpen] = useState(false);
   const [filter, setFilter] = useState(null);
   const [filterType, setFilterType] = useState(null); // Filtre "Type de problème"
-  const [filterStatus, setFilterStatus] = useState([]); // Filtre "Statut"
+  const [filterStatus, setFilterStatus] = useState(["1","2"]); // Filtre "Statut" avec tout selectionné par défaut
   const [tempEmergencyDegreeMin, setTempEmergencyDegreeMin] = useState(1); // Valeurs temporaires
   const [tempEmergencyDegreeMax, setTempEmergencyDegreeMax] = useState(5);
   const [emergencyDegreeMin, setEmergencyDegreeMin] = useState(1); // Importance minimale
@@ -36,12 +36,20 @@ export default function Home({ navigation }) {
     setUserName(name);
   };
 
+  const getStatusNames = (ids) => {
+    return ids
+      .map(id => status.find(status => status.id === id)?.name)
+      .filter(name => name); // Filtrer les valeurs undefined
+  };
+  
+
   const toggleSelectionFilterStatus = (id) => {
     if (filterStatus.includes(id)) {
       setFilterStatus(filterStatus.filter((item) => item !== id)); // Déselectionner
     } else {
       setFilterStatus([...filterStatus, id]); // Sélectionner
     }
+    console.log("Statuts sélectionnés :", filterStatus);
   };
 
   const renderStatus = ({ item }) => {
@@ -83,11 +91,12 @@ export default function Home({ navigation }) {
       setRegion(userRegion);
 
       // Charger les marqueurs après avoir récupéré la localisation
+      const statusNames = getStatusNames(filterStatus);
       try {
         const data = await fetchMarkers({
           region: userRegion,
           filterType,
-          filterStatus,
+          filterStatus: statusNames,
           emergencyDegreeMin,
           emergencyDegreeMax,
         });
@@ -103,11 +112,12 @@ export default function Home({ navigation }) {
 
   // Fonction pour actualiser les marqueurs
   const refreshMarkers = async () => {
+    const statusNames = getStatusNames(filterStatus);
     try {
       const data = await fetchMarkers({
         region: region,
         filterType,
-        filterStatus,
+        filterStatus: statusNames,
         emergencyDegreeMin,
         emergencyDegreeMax,
       });
