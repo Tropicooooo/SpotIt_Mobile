@@ -11,8 +11,22 @@ export const fetchMarkers = async ({ region, filterType = null, filterStatus = n
   const latMax = latitude + latitudeDelta / 2;
   const lngMin = longitude - longitudeDelta / 2;
   const lngMax = longitude + longitudeDelta / 2;
-  
-  const url = `http://192.168.1.46:3001/problem?latMin=${latMin}&latMax=${latMax}&lngMin=${lngMin}&lngMax=${lngMax}&${filterType ? `type=${filterType}` : ''}&${filterStatus ? `status=${filterStatus.join(',')}` : ''}&emergencyDegreeMin=${emergencyDegreeMin}&emergencyDegreeMax=${emergencyDegreeMax}`;
+
+  // Construction de la base de l'URL
+  let url = `http://192.168.1.46:3001/problem?latMin=${latMin}&latMax=${latMax}&lngMin=${lngMin}&lngMax=${lngMax}`;
+
+  // Ajout des filtres conditionnels
+  const filters = [];
+  if (filterType) filters.push(`type=${filterType}`);
+  if (filterStatus) filters.push(`status=${filterStatus.join(',')}`);
+  filters.push(`emergencyDegreeMin=${emergencyDegreeMin}`);
+  filters.push(`emergencyDegreeMax=${emergencyDegreeMax}`);
+
+  // Ajout des filtres à l'URL si disponibles
+  if (filters.length > 0) {
+    url += '&' + filters.join('&');
+  }
+
   console.log("URL de la requête API :", url);
   try {
     const response = await fetch(url);

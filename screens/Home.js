@@ -41,16 +41,22 @@ export default function Home({ navigation }) {
   };
 
   const getStatusNames = (ids) => {
+    if (!ids || ids.length === 0) {
+      return ""; // Si aucun statut sélectionné, renvoyer une chaîne vide
+    }
     return ids
       .map(id => status.find(status => status.id === id)?.name)
       .filter(name => name); // Filtrer les valeurs undefined
   };
-
+  
   const getTypesLabels = (types) => {
-    return types
-    .filter((_, index) => checked[index]) // Filtre uniquement les types sélectionnés
-    .map((type) => type.label); // Extrait les labels des types sélectionnés
+    const selectedTypes = types.filter((_, index) => checked[index]);
+    if (selectedTypes.length === 0) {
+      return ""; // Si aucun type sélectionné, renvoyer une chaîne vide
+    }
+    return selectedTypes.map(type => type.label); // Extrait les labels des types sélectionnés
   };
+  
 
 
   const toggleSelectionFilterStatus = (id) => {
@@ -128,15 +134,16 @@ export default function Home({ navigation }) {
   const refreshMarkers = async () => {
     const statusNames = getStatusNames(filterStatus);
     const typesLabels = getTypesLabels(filterType);
+  
     try {
       const data = await fetchMarkers({
         region: region,
-        filterType : typesLabels,
-        filterStatus: statusNames,
+        filterType: typesLabels || "", // Utiliser "" si typesLabels est vide
+        filterStatus: statusNames || "", // Utiliser "" si statusNames est vide
         emergencyDegreeMin,
         emergencyDegreeMax,
       });
-
+  
       setMarkers(data);
       console.log("Marqueurs mis à jour :", data);
     } catch (error) {
