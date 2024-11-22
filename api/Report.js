@@ -1,4 +1,5 @@
 export const fetchMarkers = async ({ region, filterType = null, filterStatus = null, emergencyDegreeMin = 0, emergencyDegreeMax = 5 }) => {
+  console.log(filterType);
   if (!region) {
     throw new Error("Aucune région définie pour récupérer les marqueurs.");
   }

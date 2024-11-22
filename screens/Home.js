@@ -1,13 +1,14 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Modal, Pressable, FlatList } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Modal, Pressable, FlatList, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Provider, FAB } from 'react-native-paper';
 import MapComponent from '../components/Map';
-import User from '../components/User';
+import User from '../api/User';
 import * as Location from 'expo-location';
-import { fetchMarkers } from '../components/Report'; // Import de la fonction
+import { fetchMarkers } from '../api/Report'; // Import de la fonction
 import colors from '../constants/colors';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
+import ProblemType from '../api/ProblemType';  // Import du composant qui récupère les types de problèmes
 
 export default function Home({ navigation }) {
   const mapRef = useRef(null);
@@ -19,12 +20,15 @@ export default function Home({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [isFabOpen, setIsFabOpen] = useState(false);
   const [filter, setFilter] = useState(null);
-  const [filterType, setFilterType] = useState(null); // Filtre "Type de problème"
+  const [filterType, setFilterType] = useState([]); // Filtre "Type de problème"
   const [filterStatus, setFilterStatus] = useState(["1","2"]); // Filtre "Statut" avec tout selectionné par défaut
   const [tempEmergencyDegreeMin, setTempEmergencyDegreeMin] = useState(1); // Valeurs temporaires
   const [tempEmergencyDegreeMax, setTempEmergencyDegreeMax] = useState(5);
   const [emergencyDegreeMin, setEmergencyDegreeMin] = useState(1); // Importance minimale
   const [emergencyDegreeMax, setEmergencyDegreeMax] = useState(5); // Importance maximale
+  const [checked, setChecked] = useState({});
+
+  const iconSize = 28;
 
   const status = [
     { id: '1', name: 'En attente' },
@@ -41,16 +45,25 @@ export default function Home({ navigation }) {
       .map(id => status.find(status => status.id === id)?.name)
       .filter(name => name); // Filtrer les valeurs undefined
   };
-  
+
+  const getTypesLabels = (types) => {
+    return types
+    .filter((_, index) => checked[index]) // Filtre uniquement les types sélectionnés
+    .map((type) => type.label); // Extrait les labels des types sélectionnés
+  };
+
 
   const toggleSelectionFilterStatus = (id) => {
-    if (filterStatus.includes(id)) {
-      setFilterStatus(filterStatus.filter((item) => item !== id)); // Déselectionner
-    } else {
-      setFilterStatus([...filterStatus, id]); // Sélectionner
-    }
-    console.log("Statuts sélectionnés :", filterStatus);
+    setFilterStatus((prevStatus) => {
+      const updatedStatus = prevStatus.includes(id)
+        ? prevStatus.filter((item) => item !== id) // Déselectionner
+        : [...prevStatus, id]; // Sélectionner
+  
+      console.log("Statuts sélectionnés :", updatedStatus);
+      return updatedStatus;
+    });
   };
+  
 
   const renderStatus = ({ item }) => {
     const isSelected = filterStatus.includes(item.id); // Vérifie si l'élément est sélectionné
@@ -92,10 +105,11 @@ export default function Home({ navigation }) {
 
       // Charger les marqueurs après avoir récupéré la localisation
       const statusNames = getStatusNames(filterStatus);
+      const typesLabels = getTypesLabels(filterType);
       try {
         const data = await fetchMarkers({
           region: userRegion,
-          filterType,
+          filterType : typesLabels,
           filterStatus: statusNames,
           emergencyDegreeMin,
           emergencyDegreeMax,
@@ -108,15 +122,16 @@ export default function Home({ navigation }) {
     };
     getLocation();
   }, [filterType, filterStatus, emergencyDegreeMin, emergencyDegreeMax]); // Ajouter les filtres pour les actualisations
-
+  
 
   // Fonction pour actualiser les marqueurs
   const refreshMarkers = async () => {
     const statusNames = getStatusNames(filterStatus);
+    const typesLabels = getTypesLabels(filterType);
     try {
       const data = await fetchMarkers({
         region: region,
-        filterType,
+        filterType : typesLabels,
         filterStatus: statusNames,
         emergencyDegreeMin,
         emergencyDegreeMax,
@@ -134,14 +149,32 @@ export default function Home({ navigation }) {
    //  setRegion(newRegion);
    //};
   
-  const handleApplyFilters = () => {
+   const handleApplyFilters = () => {
     setEmergencyDegreeMin(tempEmergencyDegreeMin);
     setEmergencyDegreeMax(tempEmergencyDegreeMax);
+  
+    // Récupérer les types sélectionnés
+    const selectedTypes = getSelectedTypes();
+    setFilterType(selectedTypes);
+  
     setFilter(null); // Fermer le modal
-    refreshMarkers(); // Actualiser les marqueurs avec les nouveaux filtres
+    setTimeout(() => refreshMarkers(), 0);
   };
+  
 
   const [isAnimating, setIsAnimating] = useState(false);
+
+  const handleRectangleSelection = (index) => {
+    setChecked((prevChecked) => ({
+      ...prevChecked,
+      [index]: !prevChecked[index], // Bascule entre sélectionné et non sélectionné
+    }));
+  };
+
+  const getSelectedTypes = () => {
+    return filterType.filter((_, index) => checked[index]);
+  };
+  
 
 const resetLocation = async () => {
   if (isAnimating) return; // Empêche d'exécuter une nouvelle animation
@@ -168,7 +201,14 @@ const resetLocation = async () => {
   }
 };
 
-  
+// Cette fonction est appelée lorsque les types de problème sont récupérés
+const handleProblemTypesFetched = (data) => {
+  if (JSON.stringify(filterType) !== JSON.stringify(data)) {
+    setFilterType(data);
+  }
+};
+
+
 
   if (errorMsg) {
     return (
@@ -221,7 +261,7 @@ const resetLocation = async () => {
                       {
                         icon: 'format-list-bulleted',
                         label: 'Type',
-                        onPress: () => setFilterType('ExampleType'), // Met à jour le filtre "Type"
+                        onPress: () => setFilter('Type'), // Met à jour le filtre "Type"
                       },
                       {
                         icon: 'check-circle-outline',
@@ -290,6 +330,57 @@ const resetLocation = async () => {
               keyExtractor={(item) => item.id}
               renderItem={renderStatus}
             />
+            <TouchableOpacity
+              style={styles.filtreStatutButton}
+              onPress={handleApplyFilters}
+            >
+              <Text style={styles.filtreStatutButtonText}>Appliquer</Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
+
+
+        {/* filtre type */}
+        <Modal visible={filter === "Type"} transparent>
+          <ProblemType onTypeFetched={handleProblemTypesFetched} />
+          {/* Récupération des types de problèmes */}
+          <View style={styles.filtreStatut}>
+            <Text style={styles.filtreStatutLabel}>Sélectionne le ou les types</Text>
+            <ScrollView
+              style={styles.rectanglesContainer}
+              horizontal
+              contentContainerStyle={styles.rectanglesContent}
+              showsHorizontalScrollIndicator={false}
+            >
+              {filterType.map((type, index) => (
+                <TouchableOpacity
+                  key={type.label}
+                  style={[
+                    styles.rectangle,
+                    { backgroundColor: checked[index] ? colors.primary : colors.secondary },
+                  ]}
+                  onPress={() => handleRectangleSelection(index)}
+                >
+                  <Ionicons
+                    name="trash-bin"
+                    size={iconSize}
+                    style={{
+                      color: checked[index] ? colors.secondary : colors.primary,
+                      marginBottom: 5,
+                    }}
+                  />
+                  <Text
+                    style={[
+                      styles.rectangleText,
+                      { color: checked[index] ? colors.secondary : colors.primary },
+                    ]}
+                  >
+                    {type.description}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+
+            </ScrollView>
             <TouchableOpacity
               style={styles.filtreStatutButton}
               onPress={handleApplyFilters}

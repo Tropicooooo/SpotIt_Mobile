@@ -6,7 +6,7 @@ import { useActionSheet } from '@expo/react-native-action-sheet';
 import MapComponent from '../components/Map';
 import * as Location from 'expo-location';
 import colors from '../constants/colors'; // Chemin vers le fichier de couleurs
-import ProblemType from '../components/ProblemType';  // Import du composant qui récupère les types de problèmes
+import ProblemType from '../api/ProblemType';  // Import du composant qui récupère les types de problèmes
 
 const iconSize = 28;
 
