@@ -50,6 +50,7 @@ export default function Report({ navigation }) {
 
     getLocation();
   }, []);
+  
 
   const chooseImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -130,6 +131,7 @@ export default function Report({ navigation }) {
             longitude: region.longitude,
             importance: 1,
             problemTypeLabel: selectedProblemType.label,  // Ajouter le label du type de problème
+            status:"En attente",
           }),
         });
   
@@ -156,6 +158,11 @@ export default function Report({ navigation }) {
     setProblemTypes(data);
   };
 
+  useEffect(() => {
+    console.log(region);
+  }, [region]);
+
+
   return (
     <View style={styles.container}>
       {/* Bouton de retour */}
@@ -170,15 +177,23 @@ export default function Report({ navigation }) {
       {region && (
         <View style={styles.mapWrapper}>
           <MapComponent
-            
-            markers={[{
-              coordinate: { latitude: region.latitude, longitude: region.longitude },
-              type: 'Poubelle',
-              description: 'Un problème avec la poubelle',
-              icon: 'location-outline',
-            }]}
+            scrollEnabled={true}
+            zoomEnabled={true}
+            rotateEnabled={true}
+            pitchEnabled={true}
+            showsUserLocation={true}
+            showsMyLocationButton={true}
+            markers={[
+              {
+                coordinate: { latitude: 50.511916, longitude: 5.2406683 },
+                type: 'Test',
+                description: 'Marqueur de test',
+                icon: 'location-outline',
+              },
+            ]}      
 
           />
+          
           <TouchableOpacity style={styles.imageButton} onPress={handleChoosePhoto}>
             {image ? (
               <Image source={{ uri: image }} style={styles.image} />

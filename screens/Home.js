@@ -9,6 +9,7 @@ import User from "../api/User";
 import colors from "../constants/colors";
 import MultiSlider from "@ptomasroos/react-native-multi-slider";
 import ProblemType from "../api/ProblemType"; // Import du composant qui récupère les types de problèmes
+import { Callout } from "react-native-maps";
 
 export default function Home({ navigation }) {
   const [markers, setMarkers] = useState([]);
@@ -72,7 +73,7 @@ export default function Home({ navigation }) {
       setMarkers(data);
       console.log("Marqueurs mis à jour :", data);
     } catch (error) {
-      console.error("Erreur lors de l'actualisation des marqueurs :", error);
+      //console.error("Erreur lors de l'actualisation des marqueurs :", error);
     }
   };
 
@@ -100,7 +101,7 @@ export default function Home({ navigation }) {
         ? prevStatus.filter((item) => item !== id) // Déselectionner
         : [...prevStatus, id]; // Sélectionner
 
-      console.log("Statuts sélectionnés :", updatedStatus);
+      //console.log("Statuts sélectionnés :", updatedStatus);
       return updatedStatus;
     });
   };
@@ -131,10 +132,10 @@ export default function Home({ navigation }) {
 
   useEffect(() => {
     if (region) {
-      console.log("Region changed :", region);
+      //console.log("Region changed :", region);
       refreshMarkers();
     } else {
-      console.warn("Region is null, skipping refreshMarkers.");
+      //console.warn("Region is null, skipping refreshMarkers.");
     }
   }, [region]);
   
@@ -161,13 +162,13 @@ export default function Home({ navigation }) {
         longitudeDelta: 0.01,
       };
       setRegion(newRegion); // Met à jour l'état region
-      console.log("Localisation actuelle :", newRegion);
+      //console.log("Localisation actuelle :", newRegion);
     } catch (error) {
-      console.error("Erreur lors de la récupération de la localisation");
+      //console.error("Erreur lors de la récupération de la localisation");
       
     } finally {
       setLoading(false);
-      console.log("Region marker :", region);
+      //console.log("Region marker :", region);
     }
   };
 
@@ -188,7 +189,7 @@ export default function Home({ navigation }) {
             setLoading(false);
           }
         } catch (err) {
-          console.warn(err);
+          //console.warn(err);
           setLoading(false);
         }
       } else {
@@ -206,10 +207,10 @@ export default function Home({ navigation }) {
   };
 
   const handleRegionChangeComplete = useCallback((newRegion) => {
-    console.log("Nouvelle région :", newRegion);
-    console.log("region latitude :", newRegion.latitude);
-    console.log("region longitude :", newRegion.longitude);
-    console.log("region prevRegion :", prevRegion);
+    //n console.log("Nouvelle région :", newRegion);
+    //console.log("region latitude :", newRegion.latitude);
+    //console.log("region longitude :", newRegion.longitude);
+    //console.log("region prevRegion :", prevRegion);
     if (newRegion && newRegion.latitude && newRegion.longitude) {
       // Comparez la nouvelle région avec la région précédente
       if (
@@ -220,7 +221,7 @@ export default function Home({ navigation }) {
         setPrevRegion(newRegion); // Mettez à jour l'ancienne région
       }
     } else {
-      console.warn("newRegion is invalid", newRegion); // Avertissement si newRegion est invalide
+      //console.warn("newRegion is invalid", newRegion); // Avertissement si newRegion est invalide
     }
   }, [prevRegion]); // Dépend de prevRegion
   
@@ -248,7 +249,19 @@ export default function Home({ navigation }) {
         </View>
         <View style={styles.mapWrapper}>
           {/* Map */}
-          <MapComponent markers={markers} loading={loading} onRegionChangeComplete={handleRegionChangeComplete}/>
+          <MapComponent
+            markers={markers} 
+            loading={loading} 
+            onRegionChangeComplete={handleRegionChangeComplete}
+            scrollEnabled={true}
+            zoomEnabled={true}
+            rotateEnabled={true}
+            pitchEnabled={true}
+            showsUserLocation={true}
+            showsMyLocationButton={true}
+          >
+    
+          </MapComponent>
 
           {/* Filtre de recherche */}
           <FAB.Group
@@ -440,11 +453,11 @@ const styles = StyleSheet.create({
   profileName: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "green",
+    color: colors.primary,
   },
   menuButton: {
     padding: 10,
-    color: "green",
+    color: colors.primary,
   },
 
   /* menu option */
@@ -467,7 +480,7 @@ const styles = StyleSheet.create({
   },
   modalOptioncloseButton: {
     marginTop: 20,
-    backgroundColor: "green",
+    backgroundColor: colors.primary,
     padding: 10,
     borderRadius: 5,
   },
@@ -492,7 +505,7 @@ const styles = StyleSheet.create({
     bottom: "3%",
     left: "10%",
     right: "10%",
-    backgroundColor: "green",
+    backgroundColor: colors.primary,
     borderRadius: 25,
     paddingVertical: 8,
     alignItems: "center",
@@ -506,7 +519,7 @@ const styles = StyleSheet.create({
   /* Filtre emergency degrée */
   filtreLevel: {
     backgroundColor: "white",
-    color: "green",
+    color: colors.primary,
     left: "5%",
     right: "5%",
     alignItems: "center",
@@ -525,7 +538,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: "10%",
     right: "10%",
-    backgroundColor: "green",
+    backgroundColor: colors.primary,
     borderRadius: 15,
     paddingVertical: 8,
     alignItems: "center",
@@ -549,7 +562,7 @@ const styles = StyleSheet.create({
     },
     filtreStatutLabel: {
       fontSize: 18,
-      color: "green",
+      color: colors.primary,
       marginBottom: 10,
     },
     filtreStatutText: {
@@ -558,7 +571,7 @@ const styles = StyleSheet.create({
       marginVertical: 5,
     },
     filtreStatutButton: {
-      backgroundColor: "green",
+      backgroundColor: colors.primary,
       borderRadius: 15,
       paddingVertical: 8,
       alignItems: "center",
@@ -569,15 +582,15 @@ const styles = StyleSheet.create({
       fontSize: 18,
     },
     selectedItem: {
-      backgroundColor: "green", // Couleur de fond quand l'élément est sélectionné
-      borderColor: "green",
+      backgroundColor: colors.primary,// Couleur de fond quand l'élément est sélectionné
+      borderColor: colors.primary,
       borderWidth: 1,
     },
     item: {
       padding: 10,
       borderRadius: 5,
       borderWidth: 1,
-      borderColor: "grey",
+      borderColor: colors.secondary,
       marginVertical: 5,
     },
     itemText: {

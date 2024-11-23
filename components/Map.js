@@ -1,22 +1,14 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
-import {
-  StyleSheet,
-  View,
-  Platform,
-  Alert,
-  ActivityIndicator,
-  PermissionsAndroid,
-} from "react-native";
-import MapView, { Marker } from "react-native-maps";
+import React, { useEffect, useState, useRef } from "react";
+import { StyleSheet, View, Platform, Alert, ActivityIndicator, PermissionsAndroid, Text } from "react-native";
+import MapView, { Marker, Callout } from "react-native-maps";
 import { Ionicons } from "@expo/vector-icons";
-import { Provider, FAB } from "react-native-paper";
-import * as Location from "expo-location"; // Assurez-vous d'importer Location
+import { Provider } from "react-native-paper";
+import * as Location from "expo-location";
 
-const MapComponent = ({ markers, loading, onRegionChangeComplete }) => {
+const MapComponent = ({ markers, loading, onRegionChangeComplete, scrollEnabled, zoomEnabled, rotateEnabled, pitchEnabled, showsUserLocation, showsMyLocationButton }) => {
   const mapRef = useRef(null);
-  const [region, setRegion] = useState(null); // Initialisation de la region
-  const [prevRegion, setPrevRegion] = useState(null); // Si vous avez besoin de gérer la région précédente
-  const [errorMsg, setErrorMsg] = useState(null); // Pour les erreurs de permission
+  const [region, setRegion] = useState(null); 
+  const [errorMsg, setErrorMsg] = useState(null); 
   const [isLoading, setLoading] = useState(false);
 
   const defaultMapStyle = [
@@ -32,10 +24,8 @@ const MapComponent = ({ markers, loading, onRegionChangeComplete }) => {
     },
   ];
 
-  // Fonction pour récupérer la position actuelle
   const getCurrentLocation = async () => {
     setLoading(true);
-
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
       setErrorMsg("Permission de localisation refusée");
@@ -53,15 +43,12 @@ const MapComponent = ({ markers, loading, onRegionChangeComplete }) => {
         latitudeDelta: 0.01,
         longitudeDelta: 0.01,
       };
-      setRegion(newRegion); // Met à jour l'état region avec la position actuelle
-      console.log("Localisation actuelle :", newRegion);
+      setRegion(newRegion);
     } catch (error) {
-      console.error("Erreur lors de la récupération de la localisation");
       setLoading(false);
     }
   };
 
-  // Vérification et demande de permission de localisation
   useEffect(() => {
     const requestLocationPermission = async () => {
       if (Platform.OS === "android") {
@@ -79,7 +66,6 @@ const MapComponent = ({ markers, loading, onRegionChangeComplete }) => {
             setLoading(false);
           }
         } catch (err) {
-          console.warn(err);
           setLoading(false);
         }
       } else {
@@ -90,7 +76,6 @@ const MapComponent = ({ markers, loading, onRegionChangeComplete }) => {
     requestLocationPermission();
   }, []);
 
-  // Center the map when the region changes
   useEffect(() => {
     if (region && mapRef.current) {
       const currentRegion = mapRef.current.props.region;
@@ -107,12 +92,16 @@ const MapComponent = ({ markers, loading, onRegionChangeComplete }) => {
       ) : (
         <Provider>
           <MapView
-            ref={mapRef} // Référence à la carte pour un contrôle manuel
+            ref={mapRef}
             style={styles.map}
-            region={region} // Utilisation de la région initiale (localisation actuelle)
-            showsUserLocation={true}
-            showsMyLocationButton={true}
+            region={region}
+            showsUserLocation={showsUserLocation}
+            showsMyLocationButton={showsMyLocationButton}
             customMapStyle={defaultMapStyle}
+            scrollEnabled={scrollEnabled}
+            zoomEnabled={zoomEnabled}
+            rotateEnabled={rotateEnabled}
+            pitchEnabled={pitchEnabled}
             onRegionChangeComplete={onRegionChangeComplete}
           >
             {markers.map((marker, index) => (
@@ -122,11 +111,16 @@ const MapComponent = ({ markers, loading, onRegionChangeComplete }) => {
                   latitude: parseFloat(marker.latitude),
                   longitude: parseFloat(marker.longitude),
                 }}
-                onPress={() => console.log(`Marker pressé :`, marker)}
               >
                 <Ionicons name="location-sharp" size={35} color="green" />
+                <Callout> 
+                  <View>
+                    <Text>{`Marker ${index + 1}`}</Text>
+                  </View>
+                </Callout>
               </Marker>
             ))}
+
           </MapView>
         </Provider>
       )}
@@ -144,6 +138,20 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
+  calloutContainer: {
+    minWidth: 150,
+    minHeight: 50,
+    padding: 10,
+    backgroundColor: "white",
+    borderRadius: 10,
+    elevation: 3,
+  },
+  calloutText: {
+    fontSize: 14,
+    color: "black",
+    textAlign: "center",
+  },
+  
 });
 
 export default MapComponent;

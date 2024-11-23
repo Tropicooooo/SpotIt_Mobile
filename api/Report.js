@@ -3,7 +3,7 @@ export const fetchMarkers = async ({ region, filterType = null, filterStatus = n
     throw new Error("Aucune région définie pour récupérer les marqueurs.");
   }
 
-  console.log("Région de la carte :", region);
+  //console.log("Région de la carte :", region);
   const { latitude, longitude, latitudeDelta, longitudeDelta } = region;
 
   // Calcul des limites géographiques
