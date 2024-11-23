@@ -113,44 +113,59 @@ export default function Report({ navigation }) {
   
 
   const handleSubmit = async () => {
-    // Trouver l'index du type de problème sélectionné
+    // Vérification des champs
+    if (!image) {
+      alert("Veuillez ajouter une image.");
+      return;
+    }
+  
+    if (!description) {
+      alert("Veuillez ajouter une description.");
+      return;
+    }
+  
+    // Vérification de la sélection d'un type de problème
     const selectedIndex = Object.keys(checked).find(key => checked[key]);
-  
-    // Si un problème a été sélectionné
-    if (selectedIndex !== undefined) {
-      const selectedProblemType = problemTypes[selectedIndex];
-      try {
-        const response = await fetch("http://192.168.1.46:3001/problem", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            description: description,
-            latitude: region.latitude,
-            longitude: region.longitude,
-            importance: 1,
-            problemTypeLabel: selectedProblemType.label,  // Ajouter le label du type de problème
-            status:"En attente",
-          }),
-        });
-  
-        if (response.ok) {
-          alert("Le problème a été signalé avec succès !");
-          navigation.navigate('HomeScreen');
-        } else {
-          const error = await response.json();
-          console.error("Erreur API :", error);
-          alert("Une erreur est survenue. Veuillez réessayer.");
-        }
-      } catch (err) {
-        console.error("Erreur réseau :", err);
-        alert("Erreur réseau. Vérifiez votre connexion.");
-      }
-    } else {
+    if (selectedIndex === undefined) {
       alert("Veuillez sélectionner un type de problème.");
+      return;
+    }
+  
+    const selectedProblemType = problemTypes[selectedIndex];
+  
+    // Si toutes les validations sont passées, envoyer les données
+    try {
+      const response = await fetch("http://192.168.1.46:3001/problem", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          description: description,
+          latitude: region.latitude,
+          longitude: region.longitude,
+          importance: 1,
+          problemTypeLabel: selectedProblemType.label,  // Ajouter le label du type de problème
+          status: "En attente",
+          image: image,  // Ajouter l'image dans la requête
+        }),
+      });
+  
+      if (response.ok) {
+        alert("Le problème a été signalé avec succès !");
+        navigation.navigate('HomeScreen');
+      } else {
+        const error = await response.json();
+        console.error("Erreur API :", error);
+        alert("Une erreur est survenue. Veuillez réessayer.");
+      }
+    } catch (err) {
+      console.error("Erreur réseau :", err);
+      alert("Erreur réseau. Vérifiez votre connexion.");
     }
   };
+  
+  
   
 
   // Cette fonction est appelée lorsque les types de problème sont récupérés
@@ -383,7 +398,7 @@ const styles = StyleSheet.create({
   },
   addressText: {
     fontSize: 16,
-    color:colors.secondary,
+    color: 'gray',
     marginLeft: 35, // Pour aligner le texte sous l'icône
   },
 });
