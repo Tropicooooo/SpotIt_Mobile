@@ -133,6 +133,8 @@ export default function Home({ navigation }) {
     if (region) {
       console.log("Region changed :", region);
       refreshMarkers();
+    } else {
+      console.warn("Region is null, skipping refreshMarkers.");
     }
   }, [region]);
   
@@ -415,6 +417,7 @@ export default function Home({ navigation }) {
           </View>
         </Modal>
       </View>
+
     </Provider>
   );
 }
