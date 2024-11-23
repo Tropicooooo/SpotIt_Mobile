@@ -332,7 +332,7 @@ const styles = StyleSheet.create({
   labelText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: 'green',
+    color: colors.primary,
     marginLeft: 5, // Réduction de l'espace entre l'icône et le texte
   },
   descriptionContainer: {
@@ -351,7 +351,7 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
   },
   reportButton: {
-    backgroundColor: 'green',
+    backgroundColor: colors.primary,
     borderRadius: 25,
     paddingVertical: 12,
     alignItems: 'center',
@@ -383,7 +383,8 @@ const styles = StyleSheet.create({
   },
   addressText: {
     fontSize: 16,
-    color: 'gray',
+    color:colors.secondary,
     marginLeft: 35, // Pour aligner le texte sous l'icône
   },
 });
+
