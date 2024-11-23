@@ -6,7 +6,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 
-import Home from './screens/Home';
+import Home from './screens/Home.js';
 import Leaderboard from './screens/Leaderboard';
 import Profile from './screens/Profile';
 import Rewards from './screens/Rewards';

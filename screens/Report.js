@@ -161,7 +161,7 @@ export default function Report({ navigation }) {
       {/* Bouton de retour */}
       <TouchableOpacity
         style={styles.backButton}
-        onPress={() => navigation.navigate('HomeScreen', { refresh: false })}
+        onPress={() => navigation.navigate('HomeScreen')}
       >
         <Ionicons name="arrow-back-outline" size={iconSize} color={colors.primary} />
       </TouchableOpacity>
@@ -170,17 +170,14 @@ export default function Report({ navigation }) {
       {region && (
         <View style={styles.mapWrapper}>
           <MapComponent
-            region={region}
+            
             markers={[{
               coordinate: { latitude: region.latitude, longitude: region.longitude },
               type: 'Poubelle',
               description: 'Un problème avec la poubelle',
               icon: 'location-outline',
             }]}
-            scrollEnabled={false}
-            zoomEnabled={false}
-            rotateEnabled={false}
-            pitchEnabled={false}
+
           />
           <TouchableOpacity style={styles.imageButton} onPress={handleChoosePhoto}>
             {image ? (
