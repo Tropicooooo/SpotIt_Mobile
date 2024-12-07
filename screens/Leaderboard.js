@@ -17,7 +17,7 @@ export default function Leaderboard() {
           const transformedUsers = data.map(user => ({
             ...user,
             id: user.email, // Utilisez `email` comme identifiant unique
-            name: `${user.firstname} ${user.lastname.charAt(0)}.`, //affiche firstname et une seule lettre du lastname
+            name: `${user.first_name} ${user.last_name.charAt(0)}.`, //affiche firstname et une seule lettre du lastname
           }));
   
           // Générer des utilisateurs fictifs pour compléter jusqu'à 10

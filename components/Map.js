@@ -5,7 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Provider } from "react-native-paper";
 import * as Location from "expo-location";
 
-const MapComponent = ({ markers, loading, onRegionChangeComplete, scrollEnabled, zoomEnabled, rotateEnabled, pitchEnabled, showsUserLocation, showsMyLocationButton }) => {
+const MapComponent = ({ markers, loading, onRegionChangeComplete, scrollEnabled, zoomEnabled, rotateEnabled, pitchEnabled, showsUserLocation, showsMyLocationButton}) => {
   const mapRef = useRef(null);
   const [region, setRegion] = useState(null); 
   const [errorMsg, setErrorMsg] = useState(null); 

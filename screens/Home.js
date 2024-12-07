@@ -11,7 +11,7 @@ import MultiSlider from "@ptomasroos/react-native-multi-slider";
 import ProblemType from "../api/ProblemType"; // Import du composant qui récupère les types de problèmes
 import { Callout } from "react-native-maps";
 
-export default function Home({ navigation }) {
+export default function Home({ navigation, route }) {
   const [markers, setMarkers] = useState([]);
   const [region, setRegion] = useState(null);
   const [prevRegion, setPrevRegion] = useState({ latitude: 0, longitude: 0 });
@@ -27,6 +27,7 @@ export default function Home({ navigation }) {
   const [tempEmergencyDegreeMin, setTempEmergencyDegreeMin] = useState(1); // Valeurs temporaires
   const [tempEmergencyDegreeMax, setTempEmergencyDegreeMax] = useState(5);
   const [checked, setChecked] = useState({});
+
   const iconSize = 28;
 
   const status = [
@@ -138,7 +139,6 @@ export default function Home({ navigation }) {
       //console.warn("Region is null, skipping refreshMarkers.");
     }
   }, [region]);
-  
 
 
   const getCurrentLocation = async () => {

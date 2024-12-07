@@ -135,7 +135,7 @@ export default function Report({ navigation }) {
   
     // Si toutes les validations sont passées, envoyer les données
     try {
-      const response = await fetch("http://192.168.1.46:3001/problem", {
+      const response = await fetch("http://192.168.1.46:3001/report", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -144,10 +144,9 @@ export default function Report({ navigation }) {
           description: description,
           latitude: region.latitude,
           longitude: region.longitude,
-          importance: 1,
           problemTypeLabel: selectedProblemType.label,  // Ajouter le label du type de problème
           status: "En attente",
-          image: image,  // Ajouter l'image dans la requête
+          picture: image,  // Ajouter l'image dans la requête
         }),
       });
   
@@ -183,7 +182,9 @@ export default function Report({ navigation }) {
       {/* Bouton de retour */}
       <TouchableOpacity
         style={styles.backButton}
-        onPress={() => navigation.navigate('HomeScreen')}
+       onPress={() => navigation.navigate('HomeScreen')}
+
+        
       >
         <Ionicons name="arrow-back-outline" size={iconSize} color={colors.primary} />
       </TouchableOpacity>
