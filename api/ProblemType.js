@@ -2,7 +2,7 @@ import { useEffect } from "react";
 
 function ProblemType({ onTypeFetched }) {
   useEffect(() => {
-    fetch("http://192.168.1.46:3001/problemtype")
+    fetch("http://192.168.1.46:3001/reportType")
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);

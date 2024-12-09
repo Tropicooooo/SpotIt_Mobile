@@ -111,58 +111,46 @@ export default function Report({ navigation }) {
     setChecked(updatedChecked);
   };
   
-
   const handleSubmit = async () => {
-    // Vérification des champs
     if (!image) {
-      alert("Veuillez ajouter une image.");
+      console.log('Aucune image sélectionnée');
       return;
     }
   
-    if (!description) {
-      alert("Veuillez ajouter une description.");
-      return;
-    }
+    console.log('Tentative d\'envoi des données...');
+    const formData = new FormData();
   
-    // Vérification de la sélection d'un type de problème
+    formData.append('image', {
+      uri: image,
+      name: 'photo.jpg',
+      type: 'image/jpeg',
+    });
+  
+    formData.append('description', description);
+    formData.append('latitude', region.latitude);
+    formData.append('longitude', region.longitude);
+  
     const selectedIndex = Object.keys(checked).find(key => checked[key]);
-    if (selectedIndex === undefined) {
-      alert("Veuillez sélectionner un type de problème.");
-      return;
+    if (selectedIndex) {
+      const selectedProblemType = problemTypes[selectedIndex];
+      formData.append('problemTypeLabel', selectedProblemType.label);
     }
+    
+    formData.append('status', 'En attente');
   
-    const selectedProblemType = problemTypes[selectedIndex];
-  
-    // Si toutes les validations sont passées, envoyer les données
     try {
-      const response = await fetch("http://192.168.1.46:3001/report", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          description: description,
-          latitude: region.latitude,
-          longitude: region.longitude,
-          problemTypeLabel: selectedProblemType.label,  // Ajouter le label du type de problème
-          status: "En attente",
-          picture: image,  // Ajouter l'image dans la requête
-        }),
+      const response = await fetch('http://192.168.1.46:3001/report', {
+        method: 'POST',
+        body: formData,
       });
   
-      if (response.ok) {
-        alert("Le problème a été signalé avec succès !");
-        navigation.navigate('HomeScreen');
-      } else {
-        const error = await response.json();
-        console.error("Erreur API :", error);
-        alert("Une erreur est survenue. Veuillez réessayer.");
-      }
-    } catch (err) {
-      console.error("Erreur réseau :", err);
-      alert("Erreur réseau. Vérifiez votre connexion.");
+      console.log('Statut de réponse :', response.status);
+    } catch (error) {
+      console.error('Erreur d\'envoi des données', error);
     }
   };
+  
+  
   
   
   
@@ -193,12 +181,12 @@ export default function Report({ navigation }) {
       {region && (
         <View style={styles.mapWrapper}>
           <MapComponent
-            scrollEnabled={true}
-            zoomEnabled={true}
-            rotateEnabled={true}
-            pitchEnabled={true}
+            scrollEnabled={false}
+            zoomEnabled={false}
+            rotateEnabled={false}
+            pitchEnabled={false}
             showsUserLocation={true}
-            showsMyLocationButton={true}
+            showsMyLocationButton={false}
             markers={[
               {
                 coordinate: { latitude: 50.511916, longitude: 5.2406683 },

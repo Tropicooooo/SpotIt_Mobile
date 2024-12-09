@@ -1,5 +1,5 @@
 import React, { useEffect, useState,useCallback  } from "react";
-import { StyleSheet, View, ActivityIndicator, Alert, Platform, PermissionsAndroid, Text, Pressable, Modal, TouchableOpacity, FlatList,ScrollView } from "react-native";
+import { StyleSheet, View, Alert, Platform, PermissionsAndroid, Text, Pressable, Modal, TouchableOpacity, FlatList,ScrollView } from "react-native";
 import MapComponent from "../components/Map";
 import * as Location from "expo-location";
 import { fetchMarkers } from "../api/Report"; // Import de la fonction
@@ -9,9 +9,8 @@ import User from "../api/User";
 import colors from "../constants/colors";
 import MultiSlider from "@ptomasroos/react-native-multi-slider";
 import ProblemType from "../api/ProblemType"; // Import du composant qui récupère les types de problèmes
-import { Callout } from "react-native-maps";
 
-export default function Home({ navigation, route }) {
+export default function Home({ navigation }) {
   const [markers, setMarkers] = useState([]);
   const [region, setRegion] = useState(null);
   const [prevRegion, setPrevRegion] = useState({ latitude: 0, longitude: 0 });
