@@ -4,6 +4,7 @@ import MapView, { Marker, Callout } from "react-native-maps";
 import { Ionicons } from "@expo/vector-icons";
 import { Provider } from "react-native-paper";
 import * as Location from "expo-location";
+import colors from "../constants/colors";
 
 const MapComponent = ({ markers, loading, onRegionChangeComplete, scrollEnabled, zoomEnabled, rotateEnabled, pitchEnabled, showsUserLocation, showsMyLocationButton}) => {
   const mapRef = useRef(null);
@@ -131,27 +132,43 @@ const MapComponent = ({ markers, loading, onRegionChangeComplete, scrollEnabled,
             ))}     
           </MapView>
           <Modal
-        animationType="slide"
-        transparent={true}
-        visible={reportInfoModal}
-        onRequestClose={closeReportModal}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Report Information</Text>
-            {selectedMarker && (
-              <Text style={styles.modalText}>
-                {selectedMarker.description}
-              </Text>
-            )}
-               <Image source={{uri: "http://192.168.1.46:3001" + selectedMarker?.picture}} style={styles.modalImage} />
+            animationType="slide"
+            transparent={true}
+            visible={reportInfoModal}
+            onRequestClose={closeReportModal}
+          >
+            <View style={styles.modalContainer}>
+              
+              <View style={styles.modalCard}>
+                {/* Image */}
+                {selectedMarker && (
+                  <Image
+                    source={{ uri: "http://192.168.1.46:3001" + selectedMarker?.picture }}
+                    style={styles.modalImage}
+                  />
+                  
+                )}
+                <View style={styles.modalButton}>
+                  {/* Bouton de fermeture */}
 
-            <TouchableOpacity onPress={closeReportModal} style={styles.closeButton}>
-              <Text style={styles.closeButtonText}>Close</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+                  <TouchableOpacity onPress={closeReportModal} style={styles.closeIcon}>
+                      <Ionicons name="information-outline" size={20} color={colors.primary } />
+                    </TouchableOpacity>
+
+                    {/* Bouton d'ouverture */}
+                    <TouchableOpacity onPress={closeReportModal} style={styles.openIcon}>
+                      <Ionicons name="close" size={20} color={colors.primary } />
+                    </TouchableOpacity>
+                </View>
+                {/* Texte et Bouton */}
+                <View style={styles.modalFooter}>
+                  <Text style={styles.modalTitleProblemType}>{selectedMarker?.problemtypelabel}</Text>
+                  <Text style={styles.modalTitleReportDate}>{selectedMarker?.reportdate}</Text>
+                  <Text style={styles.modalTitleStatus}>{selectedMarker?.status}</Text>
+                </View>
+              </View>
+            </View>
+          </Modal>
         </Provider>
       )}
     </View>
@@ -168,56 +185,73 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
-  calloutContainer: {
-    minWidth: 150,
-    minHeight: 50,
-    padding: 10,
-    backgroundColor: "white",
-    borderRadius: 10,
-    elevation: 3,
-  },
-  calloutText: {
-    fontSize: 14,
-    color: "black",
-    textAlign: "center",
-  },
-  
   modalContainer: {
     flex: 1,
     justifyContent: 'flex-end',
+    top: "15%",
     bottom: "8%",
     paddingHorizontal: "4%",
-    
   },
-  modalContent: {
-    backgroundColor: 'black',
-    alignItems: 'center',
-    borderRadius: 25,
+  
+  modalCard: {
+    backgroundColor: 'white',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    overflow: 'hidden',
+    height: '50%', // Ajustez selon la taille souhaitée
+    width: '100%',
   },
+  
   modalImage: {
-    width: 200,
-    height: 200,
-    marginBottom: 20,
+    width: '100%',
+    height: '50%', // L'image occupe 70% de la carte
+    resizeMode: 'cover',
   },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
+  
+  modalFooter: {
+    padding: 15,
+    justifyContent: 'space-between',
   },
-  modalText: {
+  
+  modalTitleProblemType: {
     fontSize: 16,
-    marginBottom: 20,
+    fontWeight: '600',
+    color: 'black',
   },
-  closeButton: {
-    backgroundColor: 'green',
-    borderRadius: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-  },
-  closeButtonText: {
-    color: 'white',
+  modalTitleReportDate: {
     fontSize: 16,
+    fontWeight: '600',
+    color: 'grey',
   },
+  modalTitleStatus: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.primary,
+  },
+  modalButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    zIndex: 10, // Assure que les boutons restent au-dessus de l'image
+  },
+  
+  closeIcon: {
+    marginRight: 10, 
+    backgroundColor: 'white',
+    padding: 8,
+    borderRadius: 20,
+    elevation: 2,
+  },
+  
+  openIcon: {
+    backgroundColor: 'white',
+    padding: 8,
+    borderRadius: 20,
+    elevation: 2,
+  },
+  
 });
 
 export default MapComponent;
