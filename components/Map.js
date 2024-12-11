@@ -89,8 +89,9 @@ const MapComponent = ({ markers, loading, onRegionChangeComplete, scrollEnabled,
   }, [region]);
 
   const openReportModal = (marker) => {
-    console.log(marker.picture);
+    console.log(marker);
     setSelectedMarker(marker);
+
     setReportInfoModal(true);
   };
 
@@ -162,7 +163,7 @@ const MapComponent = ({ markers, loading, onRegionChangeComplete, scrollEnabled,
                 </View>
                 {/* Texte et Bouton */}
                 <View style={styles.modalFooter}>
-                  <Text style={styles.modalTitleProblemType}>{selectedMarker?.problemtypelabel}</Text>
+                  <Text style={styles.modalTitleProblemType}>{selectedMarker?.problemtypedescription}</Text>
                   <Text style={styles.modalTitleReportDate}>{selectedMarker?.reportdate}</Text>
                   <Text style={styles.modalTitleStatus}>{selectedMarker?.status}</Text>
                 </View>
