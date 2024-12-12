@@ -6,7 +6,7 @@ import { Provider } from "react-native-paper";
 import * as Location from "expo-location";
 import colors from "../constants/colors";
 
-const MapComponent = ({ markers, loading, onRegionChangeComplete, scrollEnabled, zoomEnabled, rotateEnabled, pitchEnabled, showsUserLocation, showsMyLocationButton}) => {
+const MapComponent = ({ markers, loading, onRegionChangeComplete, scrollEnabled, zoomEnabled, rotateEnabled, pitchEnabled, showsUserLocation, showsMyLocationButton, navigation}) => {
   const mapRef = useRef(null);
   const [region, setRegion] = useState(null); 
   const [errorMsg, setErrorMsg] = useState(null); 
@@ -150,13 +150,13 @@ const MapComponent = ({ markers, loading, onRegionChangeComplete, scrollEnabled,
                   
                 )}
                 <View style={styles.modalButton}>
-                  {/* Bouton de fermeture */}
+                  {/* Bouton info report */}
 
-                  <TouchableOpacity onPress={closeReportModal} style={styles.closeIcon}>
+                  <TouchableOpacity onPress={() => navigation.navigate("ReportInfo", { selectedMarker })}  style={styles.closeIcon}>
                       <Ionicons name="information-outline" size={20} color={colors.primary } />
                     </TouchableOpacity>
 
-                    {/* Bouton d'ouverture */}
+                    {/* Bouton de fermeture */}
                     <TouchableOpacity onPress={closeReportModal} style={styles.openIcon}>
                       <Ionicons name="close" size={20} color={colors.primary } />
                     </TouchableOpacity>

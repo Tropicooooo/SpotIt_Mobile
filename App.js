@@ -11,6 +11,7 @@ import Leaderboard from './screens/Leaderboard';
 import Profile from './screens/Profile';
 import Rewards from './screens/Rewards';
 import Report from './screens/Report';
+import ReportInfo from './screens/ReportInfo';
 
 import colors from './constants/colors';
 
@@ -23,6 +24,7 @@ function HomeStackScreen() {
     <HomeStack.Navigator screenOptions={{ headerShown: false }}>
       <HomeStack.Screen name="HomeScreen" component={Home} />
       <HomeStack.Screen name="Report" component={Report} />
+      <HomeStack.Screen name="ReportInfo" component={ReportInfo} />
     </HomeStack.Navigator>
   );
 }
