@@ -1,4 +1,4 @@
-import RewardsScreen from './RewardsScreen.jsx';
+import RewardsScreen from './screens/RewardsScreen.jsx';
 
 const App = () => {
   return (

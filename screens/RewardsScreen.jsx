@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Image, FlatList } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
-import styles from './RewardsScreenStyles.jsx';
+import styles from '../styles/RewardsScreenStyles.jsx';
+
+const profileImage = require('../images/profile.jpg');
 
 const RewardsScreen = () => {
   const [isCatalogue, setIsCatalogue] = useState(true);
@@ -45,7 +47,7 @@ const RewardsScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Image source={{ uri: 'https://cdn.mos.cms.futurecdn.net/nyU6UyNw4B4QVLj69n5hbe-1200-80.jpg' }} style={styles.profileImage} />
+        <Image source={profileImage} style={styles.profileImage} />
         <Text style={styles.userName}>GUEST</Text>
       </View>
 
