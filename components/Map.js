@@ -164,7 +164,7 @@ const MapComponent = ({ markers, loading, onRegionChangeComplete, scrollEnabled,
                 {/* Texte et Bouton */}
                 <View style={styles.modalFooter}>
                   <Text style={styles.modalTitleProblemType}>{selectedMarker?.problemtypedescription}</Text>
-                  <Text style={styles.modalTitleReportDate}>{selectedMarker?.reportdate}</Text>
+                  <Text style={styles.modalTitleReportDate}>{selectedMarker?.report_date}</Text>
                   <Text style={styles.modalTitleStatus}>{selectedMarker?.status}</Text>
                 </View>
               </View>
