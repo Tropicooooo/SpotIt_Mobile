@@ -1,10 +1,11 @@
-import { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Image, FlatList } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, Image, Modal } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import styles from '../styles/RewardsScreenStyles.jsx';
 import AmusementPark from '../api/AmusementPark.jsx';
 import Cinema from '../api/Cinema.jsx';
 import Restaurant from '../api/Restaurant.jsx';
+import UserVoucher from '../api/UserVoucher.jsx';
 
 const profileImage = require('../images/profile.jpg');
 
@@ -13,26 +14,59 @@ const RewardsScreen = () => {
   const [amusementParks, setAmusementParks] = useState([]);
   const [cinemas, setCinemas] = useState([]);
   const [restaurants, setRestaurants] = useState([]);
+  const [userVouchers, setUserVouchers] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedReward, setSelectedReward] = useState(null);
 
-  const inventoryItems = [
-    { uri: 'https://www.pizzamania.be/sites/www.pizzamania.be/files/styles/hd/public/uploads/pizzas-a-emporter-namur.jpg?itok=U2mT5cYn', name: 'Pizza Mania', expiration: '2023-12-31' },
-    { uri: 'https://visit.gent.be/sites/default/files/styles/social_media/public/media/img/2022-01/VisitReeks133-DT012880.jpg?itok=kqYAHR0E', name: 'Cinéma Gent', expiration: '2023-11-30' },
-    { uri: 'https://www.walibi.be/adobe/dynamicmedia/deliver/dm-aid--77dcb454-48da-4a2c-890d-c233ebfb93fd/43-cobra.jpg?quality=85&preferwebp=true', name: 'Walibi', expiration: '2023-10-31' },
-    { uri: 'https://www.pizzamania.be/sites/www.pizzamania.be/files/styles/hd/public/uploads/pizzas-a-emporter-namur.jpg?itok=U2mT5cYn', name: 'Pizza Mania', expiration: '2023-12-31' },
-    { uri: 'https://visit.gent.be/sites/default/files/styles/social_media/public/media/img/2022-01/VisitReeks133-DT012880.jpg?itok=kqYAHR0E', name: 'Cinéma Gent', expiration: '2023-11-30' },
-    { uri: 'https://www.walibi.be/adobe/dynamicmedia/deliver/dm-aid--77dcb454-48da-4a2c-890d-c233ebfb93fd/43-cobra.jpg?quality=85&preferwebp=true', name: 'Walibi', expiration: '2023-10-31' },
-  ];
+  const handleAmusementParksFetched = (data) => setAmusementParks(data.amusementParks);
+  const handleCinemasFetched = (data) => setCinemas(data.cinemas);
+  const handleRestaurantsFetched = (data) => setRestaurants(data.restaurants);
+  const handleUserVouchersFetched = (data) => setUserVouchers(data.userVouchers);
 
-  const handleAmusementParksFetched = (data) => {
-    setAmusementParks(data.amusementParks);
+  // Fonction pour afficher les détails d'une récompense
+  const openRewardDetails = (reward) => {
+    setSelectedReward(reward);
+    setModalVisible(true);
   };
 
-  const handleCinemasFetched = (data) => {
-    setCinemas(data.cinemas);
-  };
+  // Fonction pour ajouter le voucher à l'utilisateur
+  const claimReward = () => {
+    if (!selectedReward) {
+      console.log("Aucune récompense sélectionnée.");
+      return;
+    }
 
-  const handleRestaurantsFetched = (data) => {
-    setRestaurants(data.restaurants);
+    console.log(`Récompense prise : ${selectedReward.label}`);
+
+    fetch('http://192.168.1.25:3001/user-vouchers', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: "sophie.martin@free.be",  // Ajouter l'email de Sophie
+        label: selectedReward.label,
+        description: selectedReward.description,
+        points_number: selectedReward.pointsNumber,
+        picture: selectedReward.picture
+      }),
+    })
+      .then(response => {
+        if (!response.ok) {
+          console.error("Erreur dans la réponse de l'API:", response.status);
+          throw new Error(`Erreur HTTP: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log('Voucher ajouté avec succès:', data);
+        setUserVouchers(prevVouchers => [...prevVouchers, data]);
+      })
+      .catch((err) => {
+        console.error("Erreur lors de l'ajout du voucher :", err);
+      });
+
+    setModalVisible(false);  // Fermer la fenêtre modale
   };
 
   return (
@@ -40,17 +74,24 @@ const RewardsScreen = () => {
       <AmusementPark onTypeFetched={handleAmusementParksFetched} />
       <Cinema onTypeFetched={handleCinemasFetched} />
       <Restaurant onTypeFetched={handleRestaurantsFetched} />
+      <UserVoucher onTypeFetched={handleUserVouchersFetched} />
 
       <View style={styles.header}>
         <Image source={profileImage} style={styles.profileImage} />
-        <Text style={styles.userName}>GUEST</Text>
+        <Text style={styles.userName}>Sophie</Text>
       </View>
 
       <View style={styles.toggleContainer}>
-        <TouchableOpacity style={[styles.toggleButton, isCatalogue && styles.activeToggle]} onPress={() => setIsCatalogue(true)}>
+        <TouchableOpacity
+          style={[styles.toggleButton, isCatalogue && styles.activeToggle]}
+          onPress={() => setIsCatalogue(true)}
+        >
           <Text style={[styles.toggleText, isCatalogue && styles.activeToggleText]}>CATALOGUE</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.toggleButton, !isCatalogue && styles.activeToggle]} onPress={() => setIsCatalogue(false)}>
+        <TouchableOpacity
+          style={[styles.toggleButton, !isCatalogue && styles.activeToggle]}
+          onPress={() => setIsCatalogue(false)}
+        >
           <Text style={[styles.toggleText, !isCatalogue && styles.activeToggleText]}>INVENTAIRE</Text>
         </TouchableOpacity>
       </View>
@@ -58,51 +99,103 @@ const RewardsScreen = () => {
       <ScrollView contentContainerStyle={styles.content}>
         {isCatalogue ? (
           <View>
+            {/* Section Restaurants */}
             <Text style={styles.sectionTitle}>RESTAURANTS</Text>
             <View style={styles.rewardRow}>
               {restaurants.map((restaurant, index) => (
-                <View key={index} style={styles.rewardItem}>
-                  <Image source={{ uri: 'http://192.168.129.114:3001' + restaurant.picture }} style={styles.rewardImage} />
-                </View>
+                <TouchableOpacity
+                  key={index}
+                  style={styles.rewardItem}
+                  onPress={() => openRewardDetails(restaurant)}  // Ouvrir les détails
+                >
+                  <Image
+                    source={{ uri: 'http://192.168.1.25:3001' + restaurant.picture }}
+                    style={styles.rewardImage}
+                  />
+                </TouchableOpacity>
               ))}
             </View>
 
+            {/* Section Cinémas */}
             <Text style={styles.sectionTitle}>CINÉMAS</Text>
             <View style={styles.rewardRow}>
               {cinemas.map((cinema, index) => (
-                <View key={index} style={styles.rewardItem}>
-                  <Image source={{ uri: 'http://192.168.129.114:3001' + cinema.picture }} style={styles.rewardImage} />
-                </View>
+                <TouchableOpacity
+                  key={index}
+                  style={styles.rewardItem}
+                  onPress={() => openRewardDetails(cinema)}  // Ouvrir les détails
+                >
+                  <Image
+                    source={{ uri: 'http://192.168.1.25:3001' + cinema.picture }}
+                    style={styles.rewardImage}
+                  />
+                </TouchableOpacity>
               ))}
             </View>
 
+            {/* Section Parcs d'Attractions */}
             <Text style={styles.sectionTitle}>PARCS D'ATTRACTIONS</Text>
             <View style={styles.rewardRow}>
               {amusementParks.map((amusementPark, index) => (
-                <View key={index} style={styles.rewardItem}>
-                  <Image source={{ uri: 'http://192.168.129.114:3001' + amusementPark.picture }} style={styles.rewardImage} />
-                </View>
+                <TouchableOpacity
+                  key={index}
+                  style={styles.rewardItem}
+                  onPress={() => openRewardDetails(amusementPark)}  // Ouvrir les détails
+                >
+                  <Image
+                    source={{ uri: 'http://192.168.1.25:3001' + amusementPark.picture }}
+                    style={styles.rewardImage}
+                  />
+                </TouchableOpacity>
               ))}
             </View>
           </View>
         ) : (
-          <View style={styles.flatListContainer}>
-            <FlatList
-              data={inventoryItems}
-              horizontal
-              renderItem={({ item }) => (
-                <View style={styles.rewardBox}>
-                  <Image source={{ uri: item.uri }} style={styles.rewardBoxImage} />
-                  <Text style={styles.rewardBoxText}>{item.name}</Text>
-                  <QRCode value={`Reward: ${item.name}, Expiration: ${item.expiration}`} size={150} style={styles.qrCode} />
-                  <Text style={styles.expirationDate}>Date d'expiration: {item.expiration}</Text>
-                </View>
-              )}
-              keyExtractor={(item, index) => index.toString()}
-            />
+          <View style={styles.inventoryContainer}>
+            {/* Inventaire des Bons */}
+            <Text style={styles.sectionTitle}>INVENTAIRE DES BONS</Text>
+            {userVouchers.map((voucher, index) => (
+              <View key={index} style={styles.rewardBox}>
+                <Text style={styles.rewardBoxText}>{voucher.voucherLabel}</Text>
+                <Text style={styles.expirationDate}>
+                  Date de réclamation : {new Date(voucher.claimDate).toLocaleDateString()}
+                </Text>
+                <Text style={styles.expirationDate}>
+                  Date d'expiration : {new Date(voucher.expirationDate).toLocaleDateString()}
+                </Text>
+                <QRCode value={`Code: ${voucher.code}`} size={150} style={styles.qrCode} />
+              </View>
+            ))}
           </View>
         )}
       </ScrollView>
+
+      {/* Modale pour afficher les détails de la récompense */}
+      <Modal
+        visible={modalVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalBackground}>
+          <View style={styles.modalContent}>
+            {selectedReward && (
+              <>
+                <Text style={[styles.rewardName, { textTransform: 'uppercase' }]}>{selectedReward.label}</Text>
+                <Text style={styles.rewardDescription}>{selectedReward.description}</Text>
+                <Text style={styles.rewardPoints}>Points nécessaires : {selectedReward.pointsNumber}</Text>
+
+                <TouchableOpacity style={styles.claimButton} onPress={claimReward}>
+                  <Text style={styles.claimButtonText}>Je le prends</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
+                  <Text style={styles.closeButtonText}>Fermer</Text>
+                </TouchableOpacity>
+              </>
+            )}
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
