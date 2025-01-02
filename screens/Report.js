@@ -7,7 +7,7 @@ import MapComponent from '../components/Map';
 import * as Location from 'expo-location';
 import colors from '../constants/colors'; // Chemin vers le fichier de couleurs
 import ProblemType from '../api/ProblemType';  // Import du composant qui récupère les types de problèmes
-
+import { reverseGeocode } from '../utils/utils';  // Import de la fonction de géocodage inversé
 const iconSize = 28;
 
 export default function Report({ navigation }) {
@@ -122,18 +122,19 @@ export default function Report({ navigation }) {
   
     formData.append('image', {
       uri: image,
-      name: 'photo.jpg',
+      name: Date.now() + '.jpg',
       type: 'image/jpeg',
     });
-  
+
+    console.log('region', region);
     formData.append('description', description);
-    formData.append('latitude', region.latitude);
-    formData.append('longitude', region.longitude);
+    formData.append('geocodedaddress', address);
+    formData.append('userEmail', 'alice.smith@gmail.com');
   
     const selectedIndex = Object.keys(checked).find(key => checked[key]);
     if (selectedIndex) {
       const selectedProblemType = problemTypes[selectedIndex];
-      formData.append('problemTypeLabel', selectedProblemType.label);
+      formData.append('problemtypelabel', selectedProblemType.label);
     }
     
     formData.append('status', 'En attente');
@@ -147,6 +148,9 @@ export default function Report({ navigation }) {
       console.log('Statut de réponse :', response.status);
     } catch (error) {
       console.error('Erreur d\'envoi des données', error);
+    } finally {
+      //fermer la page
+      navigation.navigate('HomeScreen');
     }
   };
   
