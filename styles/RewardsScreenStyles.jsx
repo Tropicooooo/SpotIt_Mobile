@@ -153,7 +153,7 @@ export default StyleSheet.create({
   },
   
   rewardName: {
-    fontSize: 26,  // Plus grand pour être plus proéminent
+    fontSize: 26,
     fontWeight: 'bold',
     color: '#008000',
     marginBottom: 12,

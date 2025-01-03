@@ -1,5 +1,7 @@
 import React, { useEffect } from "react";
-import { View, Image, StyleSheet, ActivityIndicator } from "react-native";
+import { View, Image, ActivityIndicator } from "react-native";
+
+import styles from '../styles/LoadingScreenStyles.jsx';
 
 const LoadingScreen = ({ navigation }) => {
   useEffect(() => {
@@ -16,23 +18,5 @@ const LoadingScreen = ({ navigation }) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#fff",
-  },
-  logo: {
-    width: 200,
-    height: 200,
-    marginBottom: 20,
-  },
-  loader: {
-    position: "absolute",
-    bottom: 20,
-  },
-});
 
 export default LoadingScreen;
