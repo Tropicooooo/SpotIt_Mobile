@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 
-function User({ onNameFetched }) {
+function ProblemType({ onTypeFetched }) {
   useEffect(() => {
-    fetch("http://192.168.1.46:3001/user/1")
+    fetch("http://192.168.1.46:3001/reportType")
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -10,14 +10,14 @@ function User({ onNameFetched }) {
         return response.json();
       })
       .then((data) => {
-        onNameFetched(data.name); // Envoi du nom à Home
+        onTypeFetched(data);
       })
       .catch((err) => {
-        console.error("Erreur lors de la récupération de l'utilisateur :", err);
+        console.error("Erreur lors de la récupération des types de problèmes :", err);
       });
-  }, [onNameFetched]);
+  }, [onTypeFetched]);
 
   return null; // Pas de rendu à faire ici
 }
 
-export default User;
+export default ProblemType;

@@ -6,7 +6,8 @@ import { useActionSheet } from '@expo/react-native-action-sheet';
 import MapComponent from '../components/Map';
 import * as Location from 'expo-location';
 import colors from '../constants/colors'; // Chemin vers le fichier de couleurs
-
+import ProblemType from '../api/ProblemType';  // Import du composant qui récupère les types de problèmes
+import { reverseGeocode } from '../utils/utils';  // Import de la fonction de géocodage inversé
 const iconSize = 28;
 
 export default function Report({ navigation }) {
@@ -14,9 +15,9 @@ export default function Report({ navigation }) {
   const [image, setImage] = useState(null);
   const [region, setRegion] = useState(null);
   const [address, setAddress] = useState('');  // Nouvel état pour l'adresse
+  const [problemTypes, setProblemTypes] = useState([]);  // État pour les types de problèmes
   const { showActionSheetWithOptions } = useActionSheet();
   const [checked, setChecked] = useState({});
-
 
   useEffect(() => {
     const getLocation = async () => {
@@ -49,6 +50,7 @@ export default function Report({ navigation }) {
 
     getLocation();
   }, []);
+  
 
   const chooseImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -95,78 +97,111 @@ export default function Report({ navigation }) {
   };
 
   const handleRectangleSelection = (index) => {
-    setChecked((prev) => ({
-      ...prev,
-      [index]: !prev[index],
-    }));
+    const updatedChecked = {};
+    
+    // Désélectionne tous les problèmes
+    problemTypes.forEach((_, idx) => {
+      updatedChecked[idx] = false;
+    });
+    
+    // Sélectionne uniquement le problème sur l'index
+    updatedChecked[index] = true;
+  
+    // Met à jour l'état avec le nouvel objet checked
+    setChecked(updatedChecked);
   };
-
+  
   const handleSubmit = async () => {
+    if (!image) {
+      console.log('Aucune image sélectionnée');
+      return;
+    }
+  
+    console.log('Tentative d\'envoi des données...');
+    const formData = new FormData();
+  
+    formData.append('image', {
+      uri: image,
+      name: Date.now() + '.jpg',
+      type: 'image/jpeg',
+    });
+
+    console.log('region', region);
+    formData.append('description', description);
+    formData.append('geocodedaddress', address);
+    formData.append('userEmail', 'alice.smith@gmail.com');
+  
+    const selectedIndex = Object.keys(checked).find(key => checked[key]);
+    if (selectedIndex) {
+      const selectedProblemType = problemTypes[selectedIndex];
+      formData.append('problemtypelabel', selectedProblemType.label);
+    }
+    
+    formData.append('status', 'En attente');
+  
     try {
-      const response = await fetch("http://192.168.1.46:3001/problem", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          user_id: 1, // Toujours 1 pour cet exemple
-          description: description,
-          latitude: region.latitude,
-          longitude: region.longitude,
-          
-        }),
+      const response = await fetch('http://192.168.1.46:3001/report', {
+        method: 'POST',
+        body: formData,
       });
   
-      if (response.ok) {
-        alert("Le problème a été signalé avec succès !");
-        // Réinitialise les champs après l'envoi
-        setDescription("");
-        setImage(null);
-        setChecked({});
-        
-        // Navigue vers le menu Home
-        navigation.navigate('HomeScreen');
-      } else {
-        const error = await response.json();
-        console.error("Erreur API :", error);
-        alert("Une erreur est survenue. Veuillez réessayer.");
-      }
-    } catch (err) {
-      console.error("Erreur réseau :", err);
-      alert("Erreur réseau. Vérifiez votre connexion.");
+      console.log('Statut de réponse :', response.status);
+    } catch (error) {
+      console.error('Erreur d\'envoi des données', error);
+    } finally {
+      //fermer la page
+      navigation.navigate('HomeScreen');
     }
   };
   
   
+  
+  
+  
 
-  const rectangles = new Array(10).fill(null);
+  // Cette fonction est appelée lorsque les types de problème sont récupérés
+  const handleProblemTypesFetched = (data) => {
+    setProblemTypes(data);
+  };
+
+  useEffect(() => {
+    console.log(region);
+  }, [region]);
+
 
   return (
     <View style={styles.container}>
       {/* Bouton de retour */}
       <TouchableOpacity
         style={styles.backButton}
-        onPress={() => navigation.navigate('HomeScreen')}
+       onPress={() => navigation.navigate('HomeScreen')}
+
+        
       >
         <Ionicons name="arrow-back-outline" size={iconSize} color={colors.primary} />
       </TouchableOpacity>
-      
+
       {/* Affichage de la carte et du bouton pour choisir une image */}
       {region && (
         <View style={styles.mapWrapper}>
           <MapComponent
-            region={region}
-            markers={[{
-              coordinate: { latitude: region.latitude, longitude: region.longitude },
-              type: 'Poubelle',
-              description: 'Un problème avec la poubelle',
-              icon: 'location-outline',
-            }]}
             scrollEnabled={false}
             zoomEnabled={false}
             rotateEnabled={false}
             pitchEnabled={false}
+            showsUserLocation={true}
+            showsMyLocationButton={false}
+            markers={[
+              {
+                coordinate: { latitude: 50.511916, longitude: 5.2406683 },
+                type: 'Test',
+                description: 'Marqueur de test',
+                icon: 'location-outline',
+              },
+            ]}      
+
           />
+          
           <TouchableOpacity style={styles.imageButton} onPress={handleChoosePhoto}>
             {image ? (
               <Image source={{ uri: image }} style={styles.image} />
@@ -176,15 +211,15 @@ export default function Report({ navigation }) {
           </TouchableOpacity>
         </View>
       )}
-        
-        {/* Contenu du formulaire */}
+
+      {/* Contenu du formulaire */}
       <ScrollView contentContainerStyle={styles.contentContainer}>
         <View style={styles.adresse}>
           <Ionicons name="location-outline" size={24} color={colors.primary} style={styles.iconSpacing} />
           <Text style={styles.labelText}>Adresse</Text>
         </View>
 
-        {/* Affichage de l'adresse juste en dessous du texte "Adresse" */}
+        {/* Affichage de l'adresse */}
         {address ? (
           <Text style={styles.addressText}>{address}</Text>
         ) : (
@@ -204,13 +239,10 @@ export default function Report({ navigation }) {
           contentContainerStyle={styles.rectanglesContent}
           showsHorizontalScrollIndicator={false}
         >
-          {rectangles.map((_, index) => (
+          {problemTypes.map((type, index) => (
             <TouchableOpacity
-              key={index}
-              style={[
-                styles.rectangle,
-                { backgroundColor: checked[index] ? colors.primary : colors.secondary },
-              ]}
+              key={type.label}  // Utilisation du label unique du type de problème
+              style={[styles.rectangle, { backgroundColor: checked[index] ? colors.primary : colors.secondary }]}
               onPress={() => handleRectangleSelection(index)}
             >
               <Ionicons
@@ -222,14 +254,11 @@ export default function Report({ navigation }) {
                 }}
               />
               <Text
-                style={[
-                  styles.rectangleText,
-                  { color: checked[index] ? colors.secondary : colors.primary },
-                ]}
+                style={[styles.rectangleText, { color: checked[index] ? colors.secondary : colors.primary }]}
               >
-                Poubelle
+                {type.description} {/* Affichage du nom du type de problème */}
               </Text>
-            </TouchableOpacity> 
+            </TouchableOpacity>
           ))}
         </ScrollView>
 
@@ -250,6 +279,9 @@ export default function Report({ navigation }) {
           <Text style={styles.reportButtonText}>Signaler le problème</Text>
         </TouchableOpacity>
       </ScrollView>
+
+      {/* Récupération des types de problèmes */}
+      <ProblemType onTypeFetched={handleProblemTypesFetched} />
     </View>
   );
 }
@@ -308,7 +340,7 @@ const styles = StyleSheet.create({
   labelText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: 'green',
+    color: colors.primary,
     marginLeft: 5, // Réduction de l'espace entre l'icône et le texte
   },
   descriptionContainer: {
@@ -327,7 +359,7 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
   },
   reportButton: {
-    backgroundColor: 'green',
+    backgroundColor: colors.primary,
     borderRadius: 25,
     paddingVertical: 12,
     alignItems: 'center',
@@ -363,3 +395,4 @@ const styles = StyleSheet.create({
     marginLeft: 35, // Pour aligner le texte sous l'icône
   },
 });
+
