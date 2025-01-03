@@ -13,7 +13,7 @@ const LoadingScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Image source={require("./assets/logo.png")} style={styles.logo} />
+      <Image source={require("../assets/logo.png")} style={styles.logo} />
       <ActivityIndicator size="large" color="#0000ff" style={styles.loader} />
     </View>
   );

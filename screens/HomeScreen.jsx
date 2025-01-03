@@ -20,7 +20,7 @@ import { fetchMarkers } from "../api/Report.jsx";
 import MapComponent from "../components/Map.jsx";
 import User from "../api/User.jsx";
 import ProblemType from "../api/ProblemType.jsx";
-import colors from "../constants/colors.jsx";
+import colors from "../constants/colors.js";
 import styles from "../styles/HomeScreenStyles.jsx";
 
 export default function HomeScreen({ navigation }) {

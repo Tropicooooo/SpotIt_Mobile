@@ -32,7 +32,7 @@ function LoginScreen({ onFormSwitch, onSkip, onLoginSuccess }) {
 
   return (
     <View style={styles.container}>
-      <Image source={require("./assets/logo.png")} style={styles.logo} />
+      <Image source={require("../assets/logo.png")} style={styles.logo} />
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
