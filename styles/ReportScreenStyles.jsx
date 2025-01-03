@@ -6,7 +6,6 @@ export default StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-
   backButton: {
     position: 'absolute',
     top: '6%',
@@ -14,19 +13,16 @@ export default StyleSheet.create({
     padding: 10,
     zIndex: 20,
   },
-
   mapWrapper: {
     marginTop: '10%',
     height: '20%',
     paddingHorizontal: '4%',
     position: 'relative',
   },
-
   contentContainer: {
     padding: 20,
     paddingHorizontal: '8%',
   },
-
   imageButton: {
     position: 'absolute',
     zIndex: 10,
@@ -39,41 +35,36 @@ export default StyleSheet.create({
     top: '80%',
     borderRadius: 15,
   },
-
   image: {
     width: '100%',
     height: '100%',
     borderRadius: 15,
   },
-
   type: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 5,
+    marginBottom: 5, // Réduction de l'espace
     marginTop: '5%',
   },
-
   adresse: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 5,
+    marginBottom: 5, // Réduction de l'espace
     marginTop: '30%',
   },
-
   labelText: {
     fontSize: 18,
     fontWeight: 'bold',
     color: colors.primary,
-    marginLeft: 5,
+    marginLeft: 5, // Réduction de l'espace entre l'icône et le texte
   },
-
   descriptionContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 5,
-    marginTop: 10,
+    flexDirection: 'row', // Aligner horizontalement
+    alignItems: 'center', // Centrer verticalement
+    marginBottom: 5, // Réduire l'espace sous l'icône
+    marginTop: 10, // Réduire l'espace au-dessus
   },
-
+  
   input: {
     height: 100,
     paddingHorizontal: 20,
@@ -82,7 +73,6 @@ export default StyleSheet.create({
     borderRadius: 10,
     textAlignVertical: 'top',
   },
-
   reportButton: {
     backgroundColor: colors.primary,
     borderRadius: 25,
@@ -91,24 +81,20 @@ export default StyleSheet.create({
     marginTop: 20,
     elevation: 5,
   },
-
   reportButtonText: {
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
   },
-
   rectanglesContainer: {
     maxHeight: 150,
     marginVertical: 10,
     marginTop: '8%',
   },
-
   rectanglesContent: {
     alignItems: 'center',
     paddingHorizontal: 10,
   },
-
   rectangle: {
     flexDirection: 'column',
     justifyContent: 'center',
@@ -118,10 +104,9 @@ export default StyleSheet.create({
     borderRadius: 10,
     marginRight: 10,
   },
-
   addressText: {
     fontSize: 16,
     color: 'gray',
-    marginLeft: 35,
+    marginLeft: 35, // Pour aligner le texte sous l'icône
   },
 });

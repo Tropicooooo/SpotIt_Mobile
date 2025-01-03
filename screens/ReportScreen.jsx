@@ -158,12 +158,19 @@ export default function ReportScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')} style={styles.backButton}>
+      {/* Bouton de retour */}
+      <TouchableOpacity
+        style={styles.backButton}
+       onPress={() => navigation.navigate('HomeScreen')}
+
+        
+      >
         <Ionicons name="arrow-back-outline" size={iconSize} color={colors.primary} />
       </TouchableOpacity>
 
+      {/* Affichage de la carte et du bouton pour choisir une image */}
       {region && (
-        <View style={styles.mapContainer}>
+        <View style={styles.mapWrapper}>
           <MapComponent
             scrollEnabled={false}
             zoomEnabled={false}
@@ -171,17 +178,20 @@ export default function ReportScreen({ navigation }) {
             pitchEnabled={false}
             showsUserLocation={true}
             showsMyLocationButton={false}
-            markers={[{
-              coordinate: { latitude: 50.511916, longitude: 5.2406683 },
-              type: 'Test',
-              description: 'Marqueur de test',
-              icon: 'location-outline',
-            }]}
-          />
+            markers={[
+              {
+                coordinate: { latitude: 50.511916, longitude: 5.2406683 },
+                type: 'Test',
+                description: 'Marqueur de test',
+                icon: 'location-outline',
+              },
+            ]}      
 
-          <TouchableOpacity onPress={handleChoosePhoto} style={styles.photoButton}>
+          />
+          
+          <TouchableOpacity style={styles.imageButton} onPress={handleChoosePhoto}>
             {image ? (
-              <Image source={{ uri: image }} style={styles.imagePreview} />
+              <Image source={{ uri: image }} style={styles.image} />
             ) : (
               <Ionicons name="image-outline" size={60} color="green" />
             )}
@@ -189,31 +199,37 @@ export default function ReportScreen({ navigation }) {
         </View>
       )}
 
-      <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-        <View style={styles.inputGroup}>
-          <Ionicons name="location-outline" size={24} color={colors.primary} />
-          <Text style={styles.label}>Adresse</Text>
+      {/* Contenu du formulaire */}
+      <ScrollView contentContainerStyle={styles.contentContainer}>
+        <View style={styles.adresse}>
+          <Ionicons name="location-outline" size={24} color={colors.primary} style={styles.iconSpacing} />
+          <Text style={styles.labelText}>Adresse</Text>
         </View>
 
+        {/* Affichage de l'adresse */}
         {address ? (
-          <Text style={styles.text}>{address}</Text>
+          <Text style={styles.addressText}>{address}</Text>
         ) : (
-          <Text style={styles.text}>Chargement de l'adresse...</Text>
+          <Text style={styles.addressText}>Chargement de l'adresse...</Text>
         )}
 
-        <View style={styles.inputGroup}>
-          <Ionicons name="warning-outline" size={24} color={colors.primary} />
-          <Text style={styles.label}>Type</Text>
+        {/* Type de problème */}
+        <View style={styles.type}>
+          <Ionicons name="warning-outline" size={24} color={colors.primary} style={styles.iconSpacing} />
+          <Text style={styles.labelText}>Type</Text>
         </View>
 
-        <ScrollView horizontal contentContainerStyle={styles.problemTypeContainer}>
+        {/* Conteneur des types de problème */}
+        <ScrollView
+          style={styles.rectanglesContainer}
+          horizontal
+          contentContainerStyle={styles.rectanglesContent}
+          showsHorizontalScrollIndicator={false}
+        >
           {problemTypes.map((type, index) => (
             <TouchableOpacity
-              key={type.label}
-              style={[
-                styles.problemTypeButton,
-                { backgroundColor: checked[index] ? colors.primary : colors.secondary },
-              ]}
+              key={type.label}  // Utilisation du label unique du type de problème
+              style={[styles.rectangle, { backgroundColor: checked[index] ? colors.primary : colors.secondary }]}
               onPress={() => handleRectangleSelection(index)}
             >
               <Ionicons
@@ -224,30 +240,34 @@ export default function ReportScreen({ navigation }) {
                   marginBottom: 5,
                 }}
               />
-              <Text style={{ color: checked[index] ? colors.secondary : colors.primary }}>
-                {type.description}
+              <Text
+                style={[styles.rectangleText, { color: checked[index] ? colors.secondary : colors.primary }]}
+              >
+                {type.description} {/* Affichage du nom du type de problème */}
               </Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
 
-        <View style={styles.inputGroup}>
+        {/* Description du problème */}
+        <View style={styles.descriptionContainer}>
           <Ionicons name="chatbox-ellipses-outline" size={24} color="green" />
-          <Text style={styles.label}>Description</Text>
+          <Text style={styles.labelText}>Description</Text>
         </View>
-
         <TextInput
-          style={styles.textInput}
+          style={styles.input}
           value={description}
           onChangeText={(text) => setDescription(text)}
           multiline={true}
         />
 
-        <TouchableOpacity onPress={handleSubmit} style={styles.submitButton}>
-          <Text style={styles.submitButtonText}>Signaler le problème</Text>
+        {/* Bouton de signalement */}
+        <TouchableOpacity style={styles.reportButton} onPress={handleSubmit}>
+          <Text style={styles.reportButtonText}>Signaler le problème</Text>
         </TouchableOpacity>
       </ScrollView>
 
+      {/* Récupération des types de problèmes */}
       <ProblemType onTypeFetched={handleProblemTypesFetched} />
     </View>
   );

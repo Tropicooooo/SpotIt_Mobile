@@ -4,7 +4,7 @@ const user = "sophie.martin@free.be";
 
 function UserVoucher({ onTypeFetched }) {
     useEffect(() => {
-        fetch(`http://192.168.1.25:3001/user-voucher?email=${encodeURIComponent(user)}`)
+        fetch(`http://192.168.1.46:3001/user-voucher?email=${encodeURIComponent(user)}`)
         .then((response) => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
