@@ -48,7 +48,7 @@ const RewardsScreen = () => {
 
     console.log(`Récompense prise : ${selectedReward.label}`);
 
-    fetch('http://192.168.1.25:3001/user-vouchers', {
+    fetch('http://localhost:3001/user-vouchers', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -118,7 +118,7 @@ const Section = ({ title, items, onPress }) => (
     <View style={styles.rewardRow}>
       {items.map((item, index) => (
         <TouchableOpacity key={index} style={styles.rewardItem} onPress={() => onPress(item)}>
-          <Image source={{ uri: `http://192.168.1.25:3001${item.picture}` }} style={styles.rewardImage} />
+          <Image source={{ uri: `http://localhost:3001${item.picture}` }} style={styles.rewardImage} />
         </TouchableOpacity>
       ))}
     </View>
