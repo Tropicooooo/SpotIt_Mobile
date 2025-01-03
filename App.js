@@ -6,15 +6,19 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 
-import Home from './screens/Home.js';
+import Home from './screens/Home';
 import Leaderboard from './screens/Leaderboard';
 import Profile from './screens/Profile';
 import Rewards from './screens/Rewards';
 import Report from './screens/Report';
-import ReportInfo from './screens/ReportInfo';
+import Login from "./login";
+import Register from "./register";
+import LoadingScreen from "./LoadingScreen";
+import { View, Image, Text } from "react-native";
 
 import colors from './constants/colors';
 
+const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 const HomeStack = createNativeStackNavigator();
 const iconSize = 28;
@@ -24,74 +28,57 @@ function HomeStackScreen() {
     <HomeStack.Navigator screenOptions={{ headerShown: false }}>
       <HomeStack.Screen name="HomeScreen" component={Home} />
       <HomeStack.Screen name="Report" component={Report} />
-      <HomeStack.Screen name="ReportInfo" component={ReportInfo} />
     </HomeStack.Navigator>
   );
 }
 
 export default function App() {
   return (
-    <ActionSheetProvider>
-      <NavigationContainer>
-        <Tab.Navigator
-          initialRouteName="Home"
-          screenOptions={({ route }) => ({
-            headerShown: false,
-            tabBarIcon: ({ focused, color }) => {
-              let iconName;
-
-              switch (route.name) {
-                case 'Home':
-                  iconName = focused ? 'home' : 'home-outline';
-                  break;
-                case 'Leaderboard':
-                  iconName = focused ? 'trophy' : 'trophy-outline';
-                  break;
-                case 'Profile':
-                  iconName = focused ? 'person' : 'person-outline';
-                  break;
-                case 'Rewards':
-                  iconName = focused ? 'gift' : 'gift-outline';
-                  break;
-              }
-
-              return <Ionicons name={iconName} size={iconSize} color={color} />;
-            },
-            tabBarActiveTintColor: styles.tabBar.activeTintColor,
-            tabBarInactiveTintColor: styles.tabBar.inactiveTintColor,
-            tabBarStyle: styles.tabBar.style,
-            tabBarLabelStyle: styles.tabBar.labelStyle,
-          })}
-        >
-          <Tab.Screen name="Home" component={HomeStackScreen} />
-          <Tab.Screen name="Rewards" component={Rewards} />
-          <Tab.Screen name="Leaderboard" component={Leaderboard} />
-          <Tab.Screen name="Profile" component={Profile} />
-        </Tab.Navigator>
-      </NavigationContainer>
-    </ActionSheetProvider>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Loading">
+        <Stack.Screen
+          name="Loading"
+          component={LoadingScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen name="Login" options={{ headerShown: false }}>
+          {(props) => (
+            <Login
+              {...props}
+              onFormSwitch={(formName) => props.navigation.replace(formName)}
+              onSkip={() => props.navigation.replace("Home")}
+              onLoginSuccess={() => props.navigation.replace("Home")}
+            />
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="Register" options={{ headerShown: false }}>
+          {(props) => (
+            <Register
+              {...props}
+              onFormSwitch={(formName) => props.navigation.replace(formName)}
+              onSkip={() => props.navigation.replace("Home")}
+            />
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="Home" options={{ headerShown: false }}>
+          {() => (
+            <View
+              style={{
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: "#fff",
+              }}
+            >
+              <Image
+                source={require("./assets/logo.png")}
+                style={{ width: 100, height: 100, marginBottom: 20 }}
+              />
+              <Text>Bienvenue dans l'application !</Text>
+            </View>
+          )}
+        </Stack.Screen>
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  tabBar: {
-    activeTintColor: colors.primary,
-    inactiveTintColor: 'gray',
-    style: {
-      backgroundColor: 'transparent',
-      borderTopWidth: 0,
-      elevation: 0,
-      shadowOpacity: 0,
-      height: 50,
-      paddingBottom: 3,
-      marginHorizontal: 20,
-      borderRadius: 100,
-      marginBottom: 10,
-    },
-    labelStyle: {
-      fontSize: 10,
-      fontWeight: 'bold',
-      marginBottom: 25,
-    },
-  },
-});
