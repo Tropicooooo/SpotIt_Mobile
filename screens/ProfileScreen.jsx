@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ScrollView, View, Text, Button } from 'react-native';
 import TextInputField from '../components/TextInputField';
 import DateTimePicker from '@react-native-community/datetimepicker';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../styles/ProfileScreenStyles.jsx';
 
 export default function ProfileScreen() {
@@ -17,17 +17,20 @@ export default function ProfileScreen() {
     {title: "Adresse", name: "streetLabel", imageSource: require("../images/location.png")},
     {title: "Ville", name: "cityLabel", imageSource: require("../images/location.png")},
     {title: "Code postal", name: "postalCode", imageSource: require("../images/postalcode.png")},
-    {title: "Numero", name: "streetNumber", imageSource: require("../images/number.png")},
+    {title: "Numero", name: "streetNumber", imageSource: require("../images/number.png")}
   ];
 
   const [formUser, setFormUser] = useState({});
   const [showPicker, setShowPicker] = useState(false);
   const [currentField, setCurrentField] = useState(null);
 
-  const getUser = () => {
+
+  const getUser = async () => {
+    await AsyncStorage.setItem('tokenJWT', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsaWNlLnNtaXRoQGdtYWlsLmNvbSIsInN0YXR1cyI6IlVzZXIifQ.yEG3-v4xKcEy1Fc5cQ-wpqsT308SXc2DpPVwKd75Y2o');
+    const token = await AsyncStorage.getItem('tokenJWT');
     fetch('http://10.0.2.2:3001/user/me', {
       headers: {
-        'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdGF0dXMiOiJVc2VyIiwiZW1haWwiOiJhbGljZS5zbWl0aEBnbWFpbC5jb20ifQ.JmPFBXpcpTNg0SG6hmY5FjQDcgQPoXCLfLHdMUcIjA4`
+        'Authorization': `Bearer ${token}`
       }
     })
       .then(response => {
@@ -55,24 +58,31 @@ export default function ProfileScreen() {
   };
 
   const handleDateChange = (event, selectedDate) => {
-    const date = selectedDate || formUser[currentField];
     setShowPicker(false);
-    if (currentField) {
-      setFormUser({ ...formUser, [currentField]: date });
+    if (selectedDate && currentField) {
+      // Formatage de la date pour correspondre au format attendu par l'API
+      const formattedDate = selectedDate.toISOString().split('T')[0]; // Format 'YYYY-MM-DD'
+      setFormUser(prevForm => ({
+        ...prevForm,
+        [currentField]: formattedDate
+      }));
     }
   };
 
-  const submitForm = () => {  
+  const submitForm = async() => {  
     try {
+      const token = await AsyncStorage.getItem('tokenJWT');
       const response = fetch(`http://10.0.2.2:3001/user/me${formUser?.password ? "" : "WithoutPassword"}`, {
         method: "PATCH",
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdGF0dXMiOiJVc2VyIiwiZW1haWwiOiJhbGljZS5zbWl0aEBnbWFpbC5jb20ifQ.JmPFBXpcpTNg0SG6hmY5FjQDcgQPoXCLfLHdMUcIjA4`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(formUser)
       });
     } catch (error) {
+      console.log(formUser);
+      
       console.error("Erreur lors de la requête fetch :", error);
     }
   };
@@ -94,12 +104,11 @@ export default function ProfileScreen() {
                       setCurrentField(name);
                     }}
                   />
-                
               </View>
               {showPicker && currentField === name && (
                 <DateTimePicker
                   style={styles.dateTimePicker}
-                  value={formUser[name]}
+                  value={new Date(formUser[name])}
                   mode="date"
                   display="default"
                   onChange={handleDateChange}
