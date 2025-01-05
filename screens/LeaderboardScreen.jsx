@@ -53,17 +53,17 @@ export default function LeaderboardScreen() {
     return (
       <View style={styles.podium}>
         <View style={styles.podiumUser}>
-          <Image source={require('../images/profile.jpg')} style={styles.podiumImageSmall} />
+          <Image source={require('../images/number2.jpg')} style={styles.podiumImageSmall} />
           <Text style={styles.podiumName}>{users[1].name}</Text>
           <Text style={styles.podiumPoints}>{users[1].experience} exp</Text>
         </View>
         <View style={styles.podiumUser}>
-          <Image source={require('../images/profile.jpg')} style={styles.podiumImageLarge} />
+          <Image source={require('../images/number1.jpg')} style={styles.podiumImageLarge} />
           <Text style={styles.podiumName}>{users[0].name}</Text>
           <Text style={styles.podiumPoints}>{users[0].experience} exp</Text>
         </View>
         <View style={styles.podiumUser}>
-          <Image source={require('../images/profile.jpg')} style={styles.podiumImageSmall} />
+          <Image source={require('../images/number3.png')} style={styles.podiumImageSmall} />
           <Text style={styles.podiumName}>{users[2].name}</Text>
           <Text style={styles.podiumPoints}>{users[2].experience} exp </Text>
         </View>
@@ -78,7 +78,6 @@ export default function LeaderboardScreen() {
     return (
       <View style={styles.user}>
         <Text style={styles.userIndex}>{index + 1}.</Text>
-        <Image source={require('../images/profile.jpg')} style={styles.userImage} />
         <Text style={styles.userName}>{item.name}</Text>
         <Text style={styles.userPoints}>{item.experience} exp</Text>
       </View>
