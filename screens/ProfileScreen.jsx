@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../styles/ProfileScreenStyles.jsx';
 import Constants from 'expo-constants';
 const API_URL = Constants.expoConfig.extra.API_URL;
+
 export default function ProfileScreen() {
   const tableComposantName = [
     {title: "Email", name: "email", imageSource: require("../images/profile.png"), changeAllowed: true},
@@ -49,8 +50,7 @@ export default function ProfileScreen() {
         console.log(error);
         console.error("Error fetching user data:", error);
       });
-    };
-  };
+  }
 
   useEffect(() => {
     getUser();
@@ -80,6 +80,7 @@ export default function ProfileScreen() {
       }));
     }
   };
+}
 
   const submitForm = async () => {
     const token = await AsyncStorage.getItem('tokenJWT');
@@ -120,7 +121,6 @@ export default function ProfileScreen() {
               {showPicker && currentField === name && (
                 <DateTimePicker
                   style={styles.dateTimePicker}
-                  value={new Date(formUser[name])}
                   value={new Date(formUser[name])}
                   mode="date"
                   display="default"
