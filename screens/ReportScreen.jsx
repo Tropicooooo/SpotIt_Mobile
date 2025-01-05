@@ -135,7 +135,7 @@ export default function ReportScreen({ navigation }) {
     formData.append('status', 'En attente');
 
     try {
-      const response = await fetch('http://192.168.1.46:3001/report', {
+      const response = await fetch('http://192.168.1.25:3001/report', {
         method: 'POST',
         body: formData,
       });

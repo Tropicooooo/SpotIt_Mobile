@@ -28,7 +28,7 @@ export default function ReportInfoScreen({ route, navigation }) {
       </TouchableOpacity>
 
       <Image
-        source={{ uri: "http://192.168.1.46:3001" + selectedMarker?.picture }}
+        source={{ uri: "http://192.168.1.25:3001" + selectedMarker?.picture }}
         style={styles.image}
       />
 

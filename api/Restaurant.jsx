@@ -2,7 +2,7 @@ import { useEffect } from "react";
 
 function Restaurant({ onTypeFetched }) {
     useEffect(() => {
-        fetch("http://192.168.1.46:3001/restaurant/")
+        fetch("http://192.168.1.25:3001/restaurant/")
         .then((response) => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);

@@ -17,7 +17,7 @@ export default function RegisterScreen({ onFormSwitch, onSkip }) {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:3001/manager/user", {
+      const response = await fetch("http://192.168.1.25:3001/manager/user", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

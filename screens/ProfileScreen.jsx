@@ -26,7 +26,7 @@ export default function ProfileScreen({ navigation }) {
 
   const getUser = async () => {
     const token = await AsyncStorage.getItem('tokenJWT');
-    const response = await fetch('http://192.168.1.46:3001/user/me', {
+    const response = await fetch('http://192.168.1.25:3001/user/me', {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -53,7 +53,7 @@ export default function ProfileScreen({ navigation }) {
 
   const submitForm = async () => {
     const token = await AsyncStorage.getItem('tokenJWT');
-    await fetch(`http://192.168.1.46:3001/user/me${formUser?.password ? "" : "WithoutPassword"}`, {
+    await fetch(`http://192.168.1.25:3001/user/me${formUser?.password ? "" : "WithoutPassword"}`, {
       method: "PATCH",
       headers: {
         'Content-Type': 'application/json',
