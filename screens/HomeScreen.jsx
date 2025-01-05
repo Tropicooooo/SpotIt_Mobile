@@ -84,9 +84,8 @@ export default function HomeScreen({ navigation }) {
       });
 
       setMarkers(data);
-      console.log("Marqueurs mis à jour :", data);
     } catch (error) {
-      //console.error("Erreur lors de l'actualisation des marqueurs :", error);
+      console.error("Erreur lors de la récupération des marqueurs :", error);
     }
   };
 
@@ -114,7 +113,6 @@ export default function HomeScreen({ navigation }) {
         ? prevStatus.filter((item) => item !== id) // Déselectionner
         : [...prevStatus, id]; // Sélectionner
 
-      //console.log("Statuts sélectionnés :", updatedStatus);
       return updatedStatus;
     });
   };
@@ -145,10 +143,7 @@ export default function HomeScreen({ navigation }) {
 
   useEffect(() => {
     if (region) {
-      //console.log("Region changed :", region);
       refreshMarkers();
-    } else {
-      //console.warn("Region is null, skipping refreshMarkers.");
     }
   }, [region]);
 
@@ -174,13 +169,11 @@ export default function HomeScreen({ navigation }) {
         longitudeDelta: 0.01,
       };
       setRegion(newRegion); // Met à jour l'état region
-      //console.log("Localisation actuelle :", newRegion);
     } catch (error) {
-      //console.error("Erreur lors de la récupération de la localisation");
+      console.error("Erreur lors de la récupération de la localisation");
       
     } finally {
       setLoading(false);
-      //console.log("Region marker :", region);
     }
   };
 
@@ -201,7 +194,6 @@ export default function HomeScreen({ navigation }) {
             setLoading(false);
           }
         } catch (err) {
-          //console.warn(err);
           setLoading(false);
         }
       } else {
@@ -219,10 +211,6 @@ export default function HomeScreen({ navigation }) {
   };
 
   const handleRegionChangeComplete = useCallback((newRegion) => {
-    //n console.log("Nouvelle région :", newRegion);
-    //console.log("region latitude :", newRegion.latitude);
-    //console.log("region longitude :", newRegion.longitude);
-    //console.log("region prevRegion :", prevRegion);
     if (newRegion && newRegion.latitude && newRegion.longitude) {
       // Comparez la nouvelle région avec la région précédente
       if (
@@ -232,8 +220,6 @@ export default function HomeScreen({ navigation }) {
         setRegion(newRegion); // Mettez à jour l'état seulement si la région a changé
         setPrevRegion(newRegion); // Mettez à jour l'ancienne région
       }
-    } else {
-      //console.warn("newRegion is invalid", newRegion); // Avertissement si newRegion est invalide
     }
   }, [prevRegion]); // Dépend de prevRegion
   

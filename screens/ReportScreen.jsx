@@ -109,11 +109,9 @@ export default function ReportScreen({ navigation }) {
 
   const handleSubmit = async () => {
     if (!image) {
-      console.log('Aucune image sélectionnée');
+
       return;
     }
-
-    console.log('Tentative d\'envoi des données...');
     const formData = new FormData();
 
     formData.append('image', {
@@ -121,8 +119,6 @@ export default function ReportScreen({ navigation }) {
       name: Date.now() + '.jpg',
       type: 'image/jpeg',
     });
-
-    console.log('region', region);
     formData.append('description', description);
     formData.append('geocodedaddress', address);
     formData.append('userEmail', 'alice.smith@gmail.com');
@@ -141,7 +137,6 @@ export default function ReportScreen({ navigation }) {
         body: formData,
       });
 
-      console.log('Statut de réponse :', response.status);
     } catch (error) {
       console.error('Erreur d\'envoi des données', error);
     } finally {
@@ -152,11 +147,6 @@ export default function ReportScreen({ navigation }) {
   const handleProblemTypesFetched = (data) => {
     setProblemTypes(data);
   };
-
-  useEffect(() => {
-    console.log(region);
-  }, [region]);
-
   return (
     <View style={styles.container}>
       {/* Bouton de retour */}

@@ -18,7 +18,6 @@ export const fetchMarkers = async ({ region, filterType = null, filterStatus = n
 
   // Construction de la base de l'URL
   let url = `http://${API_URL}:3001/report?latMin=${latMin}&latMax=${latMax}&lngMin=${lngMin}&lngMax=${lngMax}`;
-  console.log("URL de base de la requête API :", url);
   // Ajout des filtres conditionnels
   const filters = [];
   if (filterType) filters.push(`type=${filterType}`);
@@ -31,7 +30,6 @@ export const fetchMarkers = async ({ region, filterType = null, filterStatus = n
     url += '&' + filters.join('&');
   }
 
-  console.log("URL de la requête API :", url);
   try {
     const response = await fetch(url);
     if (!response.ok) {
