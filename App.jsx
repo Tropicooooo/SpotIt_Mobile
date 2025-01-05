@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -15,6 +15,8 @@ import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import LoadingScreen from './screens/LoadingScreen';
 import ReportInfoScreen from './screens/ReportInfoScreen';
+
+import { View, Image, Text } from "react-native";
 
 import colors from './constants/colors';
 
@@ -33,85 +35,48 @@ function HomeStackScreen() {
 }
 
 export default function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  const onLoginSuccess = () => {
-    setIsAuthenticated(true);
-  };
-
-  const onSkip = () => {
-    setIsAuthenticated(false); // Ou autre logique pour bypasser la connexion
-  };
-
-  const onFormSwitch = (form) => {
-    // Gérer la logique de changement de formulaire ici, par exemple pour enregistrer un utilisateur
-    console.log(form);
-  };
-
-  if (isAuthenticated === null) {
-    return <LoadingScreen />; // Afficher un écran de chargement pendant la vérification de l'authentification
-  }
-
   return (
     <ActionSheetProvider>
       <NavigationContainer>
-        {isAuthenticated ? (
-          <Tab.Navigator
-            initialRouteName="Home"
-            screenOptions={({ route }) => ({
-              headerShown: false,
-              tabBarIcon: ({ focused, color }) => {
-                let iconName;
+        <Tab.Navigator
+          initialRouteName="Home"
+          screenOptions={({ route }) => ({
+            headerShown: false,
+            tabBarIcon: ({ focused, color }) => {
+              let iconName;
 
-                switch (route.name) {
-                  case 'Home':
-                    iconName = focused ? 'home' : 'home-outline';
-                    break;
-                  case 'Leaderboard':
-                    iconName = focused ? 'trophy' : 'trophy-outline';
-                    break;
-                  case 'Profile':
-                    iconName = focused ? 'person' : 'person-outline';
-                    break;
-                  case 'Rewards':
-                    iconName = focused ? 'gift' : 'gift-outline';
-                    break;
-                }
+              switch (route.name) {
+                case 'Home':
+                  iconName = focused ? 'home' : 'home-outline';
+                  break;
+                case 'Leaderboard':
+                  iconName = focused ? 'trophy' : 'trophy-outline';
+                  break;
+                case 'Profile':
+                  iconName = focused ? 'person' : 'person-outline';
+                  break;
+                case 'Rewards':
+                  iconName = focused ? 'gift' : 'gift-outline';
+                  break;
+              }
 
-                return <Ionicons name={iconName} size={iconSize} color={color} />;
-              },
-              tabBarActiveTintColor: styles.tabBar.activeTintColor,
-              tabBarInactiveTintColor: styles.tabBar.inactiveTintColor,
-              tabBarStyle: styles.tabBar.style,
-              tabBarLabelStyle: styles.tabBar.labelStyle,
-            })}
-          >
-            <Tab.Screen name="Home" component={HomeStackScreen} />
-            <Tab.Screen name="Rewards" component={RewardsScreen} />
-            <Tab.Screen name="Leaderboard" component={LeaderboardScreen} />
-            <Tab.Screen name="Profile" component={ProfileScreen} />
-          </Tab.Navigator>
-        ) : (
-          <HomeStack.Navigator screenOptions={{ headerShown: false }}>
-            <HomeStack.Screen 
-              name="Login" 
-              component={(props) => (
-                <LoginScreen 
-                  {...props} 
-                  onLoginSuccess={onLoginSuccess} 
-                  onSkip={onSkip} 
-                  onFormSwitch={(form) => onFormSwitch(form, props.navigation)} // Passer la navigation ici
-                />
-              )} 
-            />
-            <HomeStack.Screen name="Register" component={RegisterScreen} />
-          </HomeStack.Navigator>
-        )}
+              return <Ionicons name={iconName} size={iconSize} color={color} />;
+            },
+            tabBarActiveTintColor: styles.tabBar.activeTintColor,
+            tabBarInactiveTintColor: styles.tabBar.inactiveTintColor,
+            tabBarStyle: styles.tabBar.style,
+            tabBarLabelStyle: styles.tabBar.labelStyle,
+          })}
+        >
+          <Tab.Screen name="Home" component={HomeStackScreen} />
+          <Tab.Screen name="Rewards" component={RewardsScreen} />
+          <Tab.Screen name="Leaderboard" component={LeaderboardScreen} />
+          <Tab.Screen name="Profile" component={ProfileScreen} />
+        </Tab.Navigator>
       </NavigationContainer>
     </ActionSheetProvider>
   );
 }
-
 
 const styles = StyleSheet.create({
   tabBar: {
