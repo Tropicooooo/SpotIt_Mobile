@@ -26,7 +26,7 @@ export default function ProfileScreen() {
 
 
   const getUser = async () => {
-    await AsyncStorage.setItem('tokenJWT', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsaWNlLnNtaXRoQGdtYWlsLmNvbSIsInN0YXR1cyI6IlVzZXIifQ.yEG3-v4xKcEy1Fc5cQ-wpqsT308SXc2DpPVwKd75Y2o');
+    //await AsyncStorage.setItem('tokenJWT', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsaWNlLnNtaXRoQGdtYWlsLmNvbSIsInN0YXR1cyI6IlVzZXIifQ.yEG3-v4xKcEy1Fc5cQ-wpqsT308SXc2DpPVwKd75Y2o');
     const token = await AsyncStorage.getItem('tokenJWT');
     fetch('http://10.0.2.2:3001/user/me', {
       headers: {
