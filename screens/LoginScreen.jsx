@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Image, ActivityIndicator } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Image, ActivityIndicator, Alert } from "react-native";
 import { API_URL } from 'dotenv/config';
 
 import styles from '../styles/LoginScreenStyles.jsx';
@@ -31,6 +31,10 @@ function LoginScreen({ onFormSwitch, onSkip, onLoginSuccess }) {
     setLoading(false);
   };
 
+  const handleForgotPassword = () => {
+    Alert.alert("Fonctionnalité indisponible pour le moment");
+  };
+
   return (
     <View style={styles.container}>
       <Image source={require("../assets/logo.png")} style={styles.logo} />
@@ -56,6 +60,9 @@ function LoginScreen({ onFormSwitch, onSkip, onLoginSuccess }) {
               placeholder="********"
               secureTextEntry
             />
+            <TouchableOpacity onPress={handleForgotPassword}>
+              <Text style={styles.forgotPassword}>Mot de passe oublié</Text>
+            </TouchableOpacity>
             <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
               <Text style={styles.submitButtonText}>Connexion</Text>
             </TouchableOpacity>
