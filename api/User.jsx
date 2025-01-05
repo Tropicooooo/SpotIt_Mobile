@@ -1,8 +1,9 @@
 import { useEffect } from "react";
-
+import Constants from 'expo-constants';
+const API_URL = Constants.expoConfig.extra.API_URL;
 function User({ onNameFetched }) {
   useEffect(() => {
-    fetch("http://192.168.1.25:3001/user/admin@example.com")
+    fetch(`http://${API_URL}:3001/user/admin@example.com`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);

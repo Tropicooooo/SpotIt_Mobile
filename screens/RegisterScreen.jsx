@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { ScrollView, View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import TextInputField from '../components/TextInputField';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-
+import Constants from 'expo-constants';
+const API_URL = Constants.expoConfig.extra.API_URL;
 import styles from '../styles/RegisterScreenStyles.jsx';
 
 export default function RegisterScreen({ onFormSwitch, onSkip }) {
@@ -17,7 +18,7 @@ export default function RegisterScreen({ onFormSwitch, onSkip }) {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const response = await fetch("http://192.168.1.25:3001/manager/user", {
+      const response = await fetch(`http://${API_URL}:3001/manager/user`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

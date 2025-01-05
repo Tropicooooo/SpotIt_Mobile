@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Image, ActivityIndicator } from "react-native";
-
+import Constants from 'expo-constants';
+const API_URL = Constants.expoConfig.extra.API_URL;
 import styles from '../styles/LoginScreenStyles.jsx';
 
 function LoginScreen({ onFormSwitch, onSkip, onLoginSuccess }) {
@@ -11,7 +12,7 @@ function LoginScreen({ onFormSwitch, onSkip, onLoginSuccess }) {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const response = await fetch("http://192.168.1.25:3001/manager/login", {
+      const response = await fetch(`http://${API_URL}:3001/manager/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
