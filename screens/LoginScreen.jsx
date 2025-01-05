@@ -1,16 +1,9 @@
-// login.js
 import React, { useState } from "react";
-import {
-  StyleSheet,
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  Image,
-  ActivityIndicator,
-} from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Image, ActivityIndicator } from "react-native";
+import styles from '../styles/LoginScreenStyles.jsx';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-function Login({ onFormSwitch, onSkip, onLoginSuccess }) {
+export default function LoginScreen({ onFormSwitch, onSkip, onLoginSuccess }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -18,7 +11,7 @@ function Login({ onFormSwitch, onSkip, onLoginSuccess }) {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:3001/manager/login", {
+      const response = await fetch("http://192.168.1.46:3001/manager/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -26,7 +19,9 @@ function Login({ onFormSwitch, onSkip, onLoginSuccess }) {
         body: JSON.stringify({ email, password }),
       });
       if (response.ok) {
-        onLoginSuccess(); // Rediriger vers la page d'accueil après une connexion réussie
+        const data = await response.json();
+        await AsyncStorage.setItem('tokenJWT', data.token);
+        onLoginSuccess();
       } else {
         alert("Email ou mot de passe incorrect");
       }
@@ -39,7 +34,7 @@ function Login({ onFormSwitch, onSkip, onLoginSuccess }) {
 
   return (
     <View style={styles.container}>
-      <Image source={require("./assets/logo.png")} style={styles.logo} />
+      <Image source={require("../assets/logo.png")} style={styles.logo} />
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
@@ -62,10 +57,7 @@ function Login({ onFormSwitch, onSkip, onLoginSuccess }) {
               placeholder="********"
               secureTextEntry
             />
-            <TouchableOpacity
-              style={styles.submitButton}
-              onPress={handleSubmit}
-            >
+            <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
               <Text style={styles.submitButtonText}>Connexion</Text>
             </TouchableOpacity>
           </View>
@@ -80,66 +72,3 @@ function Login({ onFormSwitch, onSkip, onLoginSuccess }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#fff", // Fond blanc
-  },
-  logo: {
-    width: 100,
-    height: 100,
-    marginBottom: 20,
-  },
-  header: {
-    fontSize: 24,
-    marginBottom: 20,
-    color: "#333",
-  },
-  form: {
-    width: "80%",
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    padding: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    elevation: 5,
-  },
-  label: {
-    fontSize: 16,
-    marginBottom: 5,
-    color: "#555",
-  },
-  input: {
-    height: 40,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 5,
-    marginBottom: 15,
-    paddingHorizontal: 10,
-    fontSize: 14,
-  },
-  submitButton: {
-    backgroundColor: "#28a745", // Couleur verte pour le bouton
-    borderRadius: 5,
-    padding: 10,
-    marginTop: 15,
-  },
-  submitButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    textAlign: "center",
-  },
-  link: {
-    marginTop: 15,
-    color: "#28a745",
-    fontSize: 14,
-    textDecorationLine: "underline",
-  },
-});
-
-export default Login;
