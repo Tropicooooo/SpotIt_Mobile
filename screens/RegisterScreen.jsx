@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { ScrollView, View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import TextInputField from '../components/TextInputField';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { API_URL } from 'dotenv/config';
 
 import styles from '../styles/RegisterScreenStyles.jsx';
 
@@ -17,7 +18,7 @@ export default function RegisterScreen({ onFormSwitch, onSkip }) {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const response = await fetch("http://192.168.1.25:3001/manager/user", {
+      const response = await fetch(`${API_URL}/manager/user`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -1,8 +1,10 @@
 import { useEffect } from "react";
+import { API_URL } from 'dotenv/config';
 
 function Restaurant({ onTypeFetched }) {
     useEffect(() => {
-        fetch("http://192.168.1.25:3001/restaurant/")
+        fetch(`${API_URL}/restaurant/`)
+
         .then((response) => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);

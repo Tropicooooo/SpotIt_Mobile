@@ -21,6 +21,7 @@
     "axios": "^1.7.7",
     "bcrypt": "^5.1.1",
     "datetimepicker": "^0.1.39",
+    "dotenv": "^16.4.7",
     "expo": "^52.0.23",
     "expo-file-system": "~18.0.3",
     "expo-image-picker": "~16.0.2",

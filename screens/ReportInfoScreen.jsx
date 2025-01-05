@@ -1,6 +1,7 @@
 import React from 'react';
 import { Text, View, Image, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { API_URL } from 'dotenv/config';
 
 import colors from '../constants/colors';
 import styles from '../styles/ReportInfoScreenStyles.jsx';
@@ -28,7 +29,7 @@ export default function ReportInfoScreen({ route, navigation }) {
       </TouchableOpacity>
 
       <Image
-        source={{ uri: "http://192.168.1.25:3001" + selectedMarker?.picture }}
+        source={{ uri: API_URL + selectedMarker?.picture }}
         style={styles.image}
       />
 

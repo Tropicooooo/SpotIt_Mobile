@@ -1,8 +1,9 @@
 import { useEffect } from "react";
+import { API_URL } from 'dotenv/config';
 
 function Cinema({ onTypeFetched }) {
     useEffect(() => {
-        fetch("http://192.168.1.25:3001/cinema/")
+        fetch(`${API_URL}/cinema/`)
         .then((response) => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);

@@ -4,6 +4,7 @@ import TextInputField from '../components/TextInputField';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../styles/ProfileScreenStyles.jsx';
+import { API_URL } from 'dotenv/config';
 
 export default function ProfileScreen() {
   const tableComposantName = [
@@ -28,7 +29,8 @@ export default function ProfileScreen() {
   const getUser = async () => {
     //await AsyncStorage.setItem('tokenJWT', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsaWNlLnNtaXRoQGdtYWlsLmNvbSIsInN0YXR1cyI6IlVzZXIifQ.yEG3-v4xKcEy1Fc5cQ-wpqsT308SXc2DpPVwKd75Y2o');
     const token = await AsyncStorage.getItem('tokenJWT');
-    const response = await fetch('http://192.168.1.25:3001/user/me', {
+    const response = await fetch(`${API_URL}/user/me`, {
+      
       headers: {
         'Authorization': `Bearer ${token}`
       }

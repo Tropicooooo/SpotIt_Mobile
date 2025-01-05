@@ -6,6 +6,7 @@ import AmusementPark from '../api/AmusementPark.jsx';
 import Cinema from '../api/Cinema.jsx';
 import Restaurant from '../api/Restaurant.jsx';
 import UserVoucher from '../api/UserVoucher.jsx';
+import { API_URL } from 'dotenv/config';
 
 const profileImage = require('../images/profile.jpg');
 
@@ -36,7 +37,7 @@ const RewardsScreen = () => {
 
     console.log(`Récompense prise : ${selectedReward.label}`);
 
-    fetch('http://192.168.1.25:3001/user-vouchers', {
+    fetch(`${API_URL}/user-vouchers`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -107,7 +108,7 @@ const RewardsScreen = () => {
                   onPress={() => openRewardDetails(restaurant)}
                 >
                   <Image
-                    source={{ uri: 'http://192.168.1.25:3001' + restaurant.picture }}
+                    source={{ uri: API_URL + restaurant.picture }}
                     style={styles.rewardImage}
                   />
                 </TouchableOpacity>
@@ -124,7 +125,7 @@ const RewardsScreen = () => {
                   onPress={() => openRewardDetails(cinema)}
                 >
                   <Image
-                    source={{ uri: 'http://192.168.1.25:3001' + cinema.picture }}
+                    source={{ uri: API_URL + cinema.picture }}
                     style={styles.rewardImage}
                   />
                 </TouchableOpacity>
@@ -141,7 +142,7 @@ const RewardsScreen = () => {
                   onPress={() => openRewardDetails(amusementPark)}
                 >
                   <Image
-                    source={{ uri: 'http://192.168.1.25:3001' + amusementPark.picture }}
+                    source={{ uri: API_URL + amusementPark.picture }}
                     style={styles.rewardImage}
                   />
                 </TouchableOpacity>

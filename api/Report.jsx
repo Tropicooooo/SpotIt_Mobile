@@ -1,3 +1,6 @@
+import { API_URL } from 'dotenv/config';
+
+
 export const fetchMarkers = async ({ region, filterType = null, filterStatus = null, emergencyDegreeMin = 0, emergencyDegreeMax = 5 }) => {
   if (!region) {
     throw new Error("Aucune région définie pour récupérer les marqueurs.");
@@ -13,8 +16,7 @@ export const fetchMarkers = async ({ region, filterType = null, filterStatus = n
   const lngMax = longitude + longitudeDelta / 2;
 
   // Construction de la base de l'URL
-  let url = `http://192.168.1.25:3001/report?latMin=${latMin}&latMax=${latMax}&lngMin=${lngMin}&lngMax=${lngMax}`;
-
+  let url = `${API_URL}/report?latMin=${latMin}&latMax=${latMax}&lngMin=${lngMin}&lngMax=${lngMax}`;
   // Ajout des filtres conditionnels
   const filters = [];
   if (filterType) filters.push(`type=${filterType}`);

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Image, ActivityIndicator } from "react-native";
+import { API_URL } from 'dotenv/config';
 
 import styles from '../styles/LoginScreenStyles.jsx';
 
@@ -11,7 +12,7 @@ function LoginScreen({ onFormSwitch, onSkip, onLoginSuccess }) {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const response = await fetch("http://192.168.1.25:3001/manager/login", {
+      const response = await fetch(`${API_URL}/manager/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

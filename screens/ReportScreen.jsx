@@ -8,6 +8,7 @@ import * as Location from 'expo-location';
 import colors from '../constants/colors';
 import ProblemType from '../api/ProblemType';
 import { reverseGeocode } from '../utils/utils';
+import { API_URL } from 'dotenv/config';
 
 import styles from '../styles/ReportScreenStyles.jsx';
 
@@ -135,7 +136,7 @@ export default function ReportScreen({ navigation }) {
     formData.append('status', 'En attente');
 
     try {
-      const response = await fetch('http://192.168.1.25:3001/report', {
+      const response = await fetch(`${API_URL}/report`, {
         method: 'POST',
         body: formData,
       });

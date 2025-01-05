@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Text, View, Image, FlatList, ActivityIndicator } from 'react-native';
+import { API_URL } from 'dotenv/config';
 
 import styles from '../styles/LeaderboardScreenStyles.jsx';
 
@@ -10,7 +11,7 @@ export default function LeaderboardScreen() {
   useEffect(() => {
     const fetchLeaderboard = async () => {
       try {
-        const response = await fetch('http://192.168.1.25:3001/leaderboard');
+        const response = await fetch(`${API_URL}/leaderboard`);
         const data = await response.json();
 
         if (data && data.length > 0) {

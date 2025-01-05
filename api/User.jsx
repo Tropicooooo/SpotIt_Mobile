@@ -1,8 +1,9 @@
 import { useEffect } from "react";
+import { API_URL } from 'dotenv/config';
 
 function User({ onNameFetched }) {
   useEffect(() => {
-    fetch("http://192.168.1.25:3001/user/admin@example.com")
+    fetch(`${API_URL}/restaurant/user/admin@example.com`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
