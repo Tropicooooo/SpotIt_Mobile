@@ -36,7 +36,7 @@ export default function HomeScreen({ navigation }) {
   const [modalOptionVisible, setModalOptionVisible] = useState(false);
   const [isFabOpen, setIsFabOpen] = useState(false);
   const [filter, setFilter] = useState(null);
-  const [tempEmergencyDegreeMin, setTempEmergencyDegreeMin] = useState(1); // Valeurs temporaires
+  const [tempEmergencyDegreeMin, setTempEmergencyDegreeMin] = useState(1);
   const [tempEmergencyDegreeMax, setTempEmergencyDegreeMax] = useState(5);
   const [checked, setChecked] = useState({});
 
@@ -69,7 +69,6 @@ export default function HomeScreen({ navigation }) {
     return selectedTypes.map((type) => type.label);
   };
 
-  // Fonction pour actualiser les marqueurs recois en parametre newRegion
   const refreshMarkers = async () => {
     const statusNames = getStatusNames(filterStatus);
     const typesLabels = getTypesLabels(filterType);
@@ -77,27 +76,28 @@ export default function HomeScreen({ navigation }) {
     try {
       const data = await fetchMarkers({
         region: region,
-        filterType: typesLabels || "", // Utiliser "" si typesLabels est vide
-        filterStatus: statusNames || "", // Utiliser "" si statusNames est vide
+        filterType: typesLabels || "",
+        filterStatus: statusNames || "",
         emergencyDegreeMin,
         emergencyDegreeMax,
       });
 
       setMarkers(data);
+      console.log("Marqueurs mis à jour :", data);
     } catch (error) {
-      console.error("Erreur lors de la récupération des marqueurs :", error);
+      console.error("Erreur lors de l'actualisation des marqueurs :", error);
     }
   };
 
   const renderStatus = ({ item }) => {
-    const isSelected = filterStatus.includes(item.id); // Vérifie si l'élément est sélectionné
+    const isSelected = filterStatus.includes(item.id);
 
     return (
       <TouchableOpacity
-        onPress={() => toggleSelectionFilterStatus(item.id)} // Gère la sélection/désélection
+        onPress={() => toggleSelectionFilterStatus(item.id)}
         style={[
-          styles.item, // Style par défaut
-          isSelected && styles.selectedItem, // Applique un style différent si sélectionné
+          styles.item,
+          isSelected && styles.selectedItem,
         ]}
       >
         <Text style={[styles.itemText, isSelected && styles.selectedItemText]}>
@@ -110,30 +110,28 @@ export default function HomeScreen({ navigation }) {
   const toggleSelectionFilterStatus = (id) => {
     setFilterStatus((prevStatus) => {
       const updatedStatus = prevStatus.includes(id)
-        ? prevStatus.filter((item) => item !== id) // Déselectionner
-        : [...prevStatus, id]; // Sélectionner
+        ? prevStatus.filter((item) => item !== id)
+        : [...prevStatus, id];
 
       return updatedStatus;
     });
   };
 
-
   const handleApplyFilters = () => {
     setEmergencyDegreeMin(tempEmergencyDegreeMin);
     setEmergencyDegreeMax(tempEmergencyDegreeMax);
 
-    // Récupérer les types sélectionnés
     const selectedTypes = getSelectedTypes();
     setFilterType(selectedTypes);
 
-    setFilter(null); // Fermer le modal
+    setFilter(null);
     setTimeout(() => refreshMarkers(), 0);
   };
 
   const handleRectangleSelection = (index) => {
     setChecked((prevChecked) => ({
       ...prevChecked,
-      [index]: !prevChecked[index], // Bascule entre sélectionné et non sélectionné
+      [index]: !prevChecked[index],
     }));
   };
 
@@ -146,7 +144,6 @@ export default function HomeScreen({ navigation }) {
       refreshMarkers();
     }
   }, [region]);
-
 
   const getCurrentLocation = async () => {
     setLoading(true);
@@ -168,10 +165,9 @@ export default function HomeScreen({ navigation }) {
         latitudeDelta: 0.01,
         longitudeDelta: 0.01,
       };
-      setRegion(newRegion); // Met à jour l'état region
+      setRegion(newRegion);
     } catch (error) {
       console.error("Erreur lors de la récupération de la localisation");
-      
     } finally {
       setLoading(false);
     }
@@ -212,44 +208,32 @@ export default function HomeScreen({ navigation }) {
 
   const handleRegionChangeComplete = useCallback((newRegion) => {
     if (newRegion && newRegion.latitude && newRegion.longitude) {
-      // Comparez la nouvelle région avec la région précédente
       if (
         newRegion.latitude !== prevRegion.latitude ||
         newRegion.longitude !== prevRegion.longitude
       ) {
-        setRegion(newRegion); // Mettez à jour l'état seulement si la région a changé
-        setPrevRegion(newRegion); // Mettez à jour l'ancienne région
+        setRegion(newRegion);
+        setPrevRegion(newRegion);
       }
     }
-  }, [prevRegion]); // Dépend de prevRegion
-  
-  
-
-
+  }, [prevRegion]);
 
   return (
     <Provider>
       <View style={styles.container}>
-        {/* Barre supérieure */}
         <View style={styles.topBar}>
           <View style={styles.profileSection}>
             <User onNameFetched={handleNameFetched} />
             <Text style={styles.profileName}>{userName}</Text>
           </View>
-          <Pressable style={styles.menuButton}>
-            <Ionicons
-              name="menu"
-              size={30}
-              color="green"
-              onPress={() => setModalOptionVisible(true)}
-            />
+          <Pressable style={styles.menuButton} onPress={() => setModalOptionVisible(true)}>
+            <Ionicons name="menu" size={30} color="green" />
           </Pressable>
         </View>
         <View style={styles.mapWrapper}>
-          {/* Map */}
           <MapComponent
-            markers={markers} 
-            loading={loading} 
+            markers={markers}
+            loading={loading}
             onRegionChangeComplete={handleRegionChangeComplete}
             scrollEnabled={true}
             zoomEnabled={true}
@@ -258,11 +242,7 @@ export default function HomeScreen({ navigation }) {
             showsUserLocation={true}
             showsMyLocationButton={true}
             navigation={navigation}
-          >
-    
-          </MapComponent>
-
-          {/* Filtre de recherche */}
+          />
           <FAB.Group
             open={isFabOpen}
             icon={isFabOpen ? "close" : "filter-outline"}
@@ -270,17 +250,17 @@ export default function HomeScreen({ navigation }) {
               {
                 icon: "format-list-bulleted",
                 label: "Type",
-                onPress: () => setFilter("Type"), // Met à jour le filtre "Type"
+                onPress: () => setFilter("Type"),
               },
               {
                 icon: "check-circle-outline",
                 label: "Statut",
-                onPress: () => setFilter("Statut"), // Ouvre le modal pour le statut
+                onPress: () => setFilter("Statut"),
               },
               {
                 icon: "tune",
                 label: "Niveau d'importance",
-                onPress: () => setFilter("Niveau d'importance"), // Ouvre le modal pour le niveau d'importance
+                onPress: () => setFilter("Niveau d'importance"),
               },
             ]}
             onStateChange={({ open }) => setIsFabOpen(open)}
@@ -290,23 +270,19 @@ export default function HomeScreen({ navigation }) {
             fabStyle={styles.fabGroup}
           />
         </View>
-
-          {/* Bouton de signalement */}
-          <TouchableOpacity
+        <TouchableOpacity
           style={styles.reportButton}
           onPress={() => navigation.navigate("Report")}
         >
           <Text style={styles.reportButtonText}>Signaler un problème</Text>
         </TouchableOpacity>
-
-        {/* filtre niveau d'importance */}
         <Modal visible={filter === "Niveau d'importance"} transparent>
           <View style={styles.filtreLevel}>
             <Text style={styles.sliderLabel}>
               Sélectionne le niveau d'importance :
             </Text>
             <MultiSlider
-              values={[tempEmergencyDegreeMin, tempEmergencyDegreeMax]} // Utilise les valeurs temporaires
+              values={[tempEmergencyDegreeMin, tempEmergencyDegreeMax]}
               onValuesChange={(values) => {
                 setTempEmergencyDegreeMin(values[0]);
                 setTempEmergencyDegreeMax(values[1]);
@@ -319,7 +295,6 @@ export default function HomeScreen({ navigation }) {
               selectedStyle={{ backgroundColor: "green" }}
               markerStyle={{ backgroundColor: "green" }}
             />
-
             <TouchableOpacity
               style={styles.filtreLevelButton}
               onPress={handleApplyFilters}
@@ -328,8 +303,6 @@ export default function HomeScreen({ navigation }) {
             </TouchableOpacity>
           </View>
         </Modal>
-
-        {/* filtre status */}
         <Modal visible={filter === "Statut"} transparent>
           <View style={styles.filtreStatut}>
             <Text style={styles.filtreStatutLabel}>
@@ -348,11 +321,8 @@ export default function HomeScreen({ navigation }) {
             </TouchableOpacity>
           </View>
         </Modal>
-
-        {/* filtre type */}
         <Modal visible={filter === "Type"} transparent>
           <ProblemType onTypeFetched={handleProblemTypesFetched} />
-          {/* Récupération des types de problèmes */}
           <View style={styles.filtreStatut}>
             <Text style={styles.filtreStatutLabel}>
               Sélectionne le ou les types
@@ -407,7 +377,6 @@ export default function HomeScreen({ navigation }) {
             </TouchableOpacity>
           </View>
         </Modal>
-        {/* Menu Option */}
         <Modal
           transparent
           visible={modalOptionVisible}
@@ -416,8 +385,12 @@ export default function HomeScreen({ navigation }) {
         >
           <View style={styles.modalOptionContainer}>
             <View style={styles.modalOptionContent}>
-              <Text style={styles.modalOptionText}>À propos</Text>
-              <Text style={styles.modalOptionText}>Contact</Text>
+              <TouchableOpacity onPress={() => navigation.navigate("aProposScreen")}>
+                <Text style={styles.modalOptionText}>À propos</Text>
+              </TouchableOpacity> 
+              <TouchableOpacity onPress={() => navigation.navigate("ContactScreen")}>
+                <Text style={styles.modalOptionText}>Contact</Text>
+              </TouchableOpacity>
               <Text style={styles.modalOptionText}>Déconnexion</Text>
               <TouchableOpacity
                 onPress={() => setModalOptionVisible(false)}
@@ -429,7 +402,6 @@ export default function HomeScreen({ navigation }) {
           </View>
         </Modal>
       </View>
-
     </Provider>
   );
 }
