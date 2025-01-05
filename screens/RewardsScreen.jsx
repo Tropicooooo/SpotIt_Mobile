@@ -142,7 +142,7 @@ const RewardsScreen = () => {
                   onPress={() => openRewardDetails(amusementPark)}
                 >
                   <Image
-                    source={{ uri: `http://192.168.1.25:3001` + amusementPark.picture }}
+                    source={{ uri: `http://${API_URL}:3001` + amusementPark.picture }}
                     style={styles.rewardImage}
                   />
                 </TouchableOpacity>
