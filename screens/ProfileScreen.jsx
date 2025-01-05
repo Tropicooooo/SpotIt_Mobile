@@ -1,47 +1,38 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, View, Text, Button } from 'react-native';
+import { ScrollView, View, Text, Button, TouchableOpacity } from 'react-native';
 import TextInputField from '../components/TextInputField';
 import DateTimePicker from '@react-native-community/datetimepicker';
-
 import styles from '../styles/ProfileScreenStyles.jsx';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function ProfileScreen() {
+export default function ProfileScreen({ navigation }) {
   const tableComposantName = [
-    {title: "Email", name: "email", imageSource: require("../images/profile.png"), changeAllowed: true},
-    {title: "Nom", name: "firstname", imageSource: require("../images/profile.png")},
-    {title: "Prénom", name: "lastname", imageSource: require("../images/profile.png")},
-    {title: "Téléphone", name: "phone", imageSource: require("../images/phone.png")},
-    {title: "Mot de passe", name: "password", imageSource: require("../images/password.png")},
-    {title: "Nombre de points", name: "pointsNumber", imageSource: require("../images/number.png")},
-    {title: "Date de naissance", name: "birthdate", isDate: true, imageSource: require("../images/birthday.png")},
-    {title: "Adresse", name: "streetLabel", imageSource: require("../images/location.png")},
-    {title: "Ville", name: "cityLabel", imageSource: require("../images/location.png")},
-    {title: "Code postal", name: "postalCode", imageSource: require("../images/postalcode.png")},
-    {title: "Numero", name: "streetNumber", imageSource: require("../images/number.png")},
+    { title: "Email", name: "email", imageSource: require("../images/profile.png"), changeAllowed: true },
+    { title: "Nom", name: "firstname", imageSource: require("../images/profile.png") },
+    { title: "Prénom", name: "lastname", imageSource: require("../images/profile.png") },
+    { title: "Téléphone", name: "phone", imageSource: require("../images/phone.png") },
+    { title: "Mot de passe", name: "password", imageSource: require("../images/password.png") },
+    { title: "Nombre de points", name: "pointsNumber", imageSource: require("../images/number.png") },
+    { title: "Date de naissance", name: "birthdate", isDate: true, imageSource: require("../images/birthday.png") },
+    { title: "Adresse", name: "streetLabel", imageSource: require("../images/location.png") },
+    { title: "Ville", name: "cityLabel", imageSource: require("../images/location.png") },
+    { title: "Code postal", name: "postalCode", imageSource: require("../images/postalcode.png") },
+    { title: "Numero", name: "streetNumber", imageSource: require("../images/number.png") },
   ];
 
   const [formUser, setFormUser] = useState({});
   const [showPicker, setShowPicker] = useState(false);
   const [currentField, setCurrentField] = useState(null);
 
-  const getUser = () => {
-    fetch('http://localhost:3001/user/me', {
+  const getUser = async () => {
+    const token = await AsyncStorage.getItem('tokenJWT');
+    const response = await fetch('http://192.168.1.46:3001/user/me', {
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('tokenJWT')}`
+        'Authorization': `Bearer ${token}`
       }
-    })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then(data => {
-        setFormUser(data);
-      })
-      .catch(error => {
-        console.error("Error fetching user data:", error);
-      });
+    });
+    const data = await response.json();
+    setFormUser(data);
   };
 
   useEffect(() => {
@@ -60,15 +51,21 @@ export default function ProfileScreen() {
     }
   };
 
-  const submitForm = () => {
-    fetch(`http://localhost:3001/user/me${formUser?.password ? "" : "WithoutPassword"}`, {
+  const submitForm = async () => {
+    const token = await AsyncStorage.getItem('tokenJWT');
+    await fetch(`http://192.168.1.46:3001/user/me${formUser?.password ? "" : "WithoutPassword"}`, {
       method: "PATCH",
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage?.getItem('tokenJWT')}`
+        'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify(formUser)
     });
+  };
+
+  const handleLogout = async () => {
+    await AsyncStorage.setItem('tokenJWT', 'null');
+    navigation.navigate('HomeScreen');
   };
 
   return (
@@ -82,7 +79,7 @@ export default function ProfileScreen() {
               <View style={styles.dateButton}>
                 <Button
                   color="#058C42"
-                  title={formUser[name].toLocaleDateString("fr-FR")}
+                  title={formUser[name]?.toLocaleDateString("fr-FR")}
                   onPress={() => {
                     setShowPicker(true);
                     setCurrentField(name);
@@ -117,6 +114,9 @@ export default function ProfileScreen() {
           onPress={submitForm}
         />
       </View>
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+        <Text style={styles.logoutButtonText}>Déconnexion</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 }
