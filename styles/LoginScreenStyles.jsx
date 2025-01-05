@@ -67,4 +67,12 @@ export default StyleSheet.create({
     fontSize: 14,
     textDecorationLine: "underline",
   },
+
+  forgotPassword: {
+    marginTop: 10,
+    color: "blue",
+    fontSize: 14,
+    textDecorationLine: "underline",
+    textAlign: "center",
+  },
 });
