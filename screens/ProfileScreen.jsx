@@ -25,9 +25,9 @@ export default function ProfileScreen() {
   const [currentField, setCurrentField] = useState(null);
 
   const getUser = () => {
-    fetch('http://localhost:3001/user/me', {
+    fetch('http://10.0.2.2:3001/user/me', {
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('tokenJWT')}`
+        'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdGF0dXMiOiJVc2VyIiwiZW1haWwiOiJhbGljZS5zbWl0aEBnbWFpbC5jb20ifQ.JmPFBXpcpTNg0SG6hmY5FjQDcgQPoXCLfLHdMUcIjA4`
       }
     })
       .then(response => {
@@ -37,9 +37,10 @@ export default function ProfileScreen() {
         return response.json();
       })
       .then(data => {
-        setFormUser(data);
+        setFormUser(data);  
       })
       .catch(error => {
+        console.log(error);
         console.error("Error fetching user data:", error);
       });
   };
@@ -47,6 +48,7 @@ export default function ProfileScreen() {
   useEffect(() => {
     getUser();
   }, []);
+  
 
   const handleInputChange = (name, value) => {
     setFormUser({ ...formUser, [name]: value });
@@ -60,15 +62,19 @@ export default function ProfileScreen() {
     }
   };
 
-  const submitForm = () => {
-    fetch(`http://localhost:3001/user/me${formUser?.password ? "" : "WithoutPassword"}`, {
-      method: "PATCH",
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage?.getItem('tokenJWT')}`
-      },
-      body: JSON.stringify(formUser)
-    });
+  const submitForm = () => {  
+    try {
+      const response = fetch(`http://10.0.2.2:3001/user/me${formUser?.password ? "" : "WithoutPassword"}`, {
+        method: "PATCH",
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdGF0dXMiOiJVc2VyIiwiZW1haWwiOiJhbGljZS5zbWl0aEBnbWFpbC5jb20ifQ.JmPFBXpcpTNg0SG6hmY5FjQDcgQPoXCLfLHdMUcIjA4`
+        },
+        body: JSON.stringify(formUser)
+      });
+    } catch (error) {
+      console.error("Erreur lors de la requête fetch :", error);
+    }
   };
 
   return (
@@ -81,13 +87,14 @@ export default function ProfileScreen() {
             <>
               <View style={styles.dateButton}>
                 <Button
-                  color="#058C42"
-                  title={formUser[name].toLocaleDateString("fr-FR")}
-                  onPress={() => {
-                    setShowPicker(true);
-                    setCurrentField(name);
-                  }}
-                />
+                    color="#058C42"
+                    title={new Date(formUser[name]).toLocaleDateString("fr-FR")}
+                    onPress={() => {
+                      setShowPicker(true);
+                      setCurrentField(name);
+                    }}
+                  />
+                
               </View>
               {showPicker && currentField === name && (
                 <DateTimePicker
