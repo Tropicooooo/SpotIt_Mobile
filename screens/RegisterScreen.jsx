@@ -56,8 +56,6 @@ export default function RegisterScreen({ navigation }) {
     setLoading(false);
   };
 
-  //eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imx1Y2EtdHVycmlvbmlAaG90bWFpbC5jb20iLCJzdGF0dXMiOiJVc2VyIiwiaWF0IjoxNzUzOTk5NTMyLCJleHAiOjE3NTY1OTE1MzJ9.cstmcN4-ODFZTkK94gvVBxIF5D-g1PT2Fe-cx3-Euhw
-
   const showDatePicker = () => {
     setDatePickerVisibility(true);
   };
