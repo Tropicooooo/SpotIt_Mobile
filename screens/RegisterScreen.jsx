@@ -44,7 +44,6 @@ export default function RegisterScreen({ navigation }) {
       });
       const userData = await response.json();
       if (response.ok) {
-        console.log(userData.token);
         AsyncStorage.setItem('tokenJWT', userData.token);
         dispatch(setUser(userData.user));
       } else {
