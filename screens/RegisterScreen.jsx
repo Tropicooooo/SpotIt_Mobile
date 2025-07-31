@@ -5,8 +5,12 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import Constants from 'expo-constants';
 const API_URL = Constants.expoConfig.extra.API_URL;
 import styles from '../styles/RegisterScreenStyles.jsx';
+import { setUser } from '../redux/userSlice';
+import { useDispatch } from 'react-redux';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export default function RegisterScreen({ onFormSwitch, onSkip }) {
+
+export default function RegisterScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -15,10 +19,12 @@ export default function RegisterScreen({ onFormSwitch, onSkip }) {
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const dispatch = useDispatch();
+
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`http://${API_URL}:3001/manager/user`, {
+      const response = await fetch(`http://${API_URL}:3001/user/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -31,22 +37,26 @@ export default function RegisterScreen({ onFormSwitch, onSkip }) {
           birthdate: birthdate.toISOString().split("T")[0],
           phone: "0123456789", 
           cityLabel: "Paris",
-          postalCode: 75000,
+          postalCode: 4200,
           streetLabel: "Rue de Rivoli",
           streetNumber: 101,
         }),
       });
+      const userData = await response.json();
       if (response.ok) {
-        onFormSwitch("Home"); 
+        console.log(userData.token);
+        AsyncStorage.setItem('tokenJWT', userData.token);
+        dispatch(setUser(userData.user));
       } else {
-        alert("Erreur lors de l'inscription");
+        alert("Erreur lors de l'inscription: " + userData.code);
       }
     } catch (error) {
-      console.error(error);
-      alert("Erreur de connexion");
+      alert("Erreur d'inscription");
     }
     setLoading(false);
   };
+
+  //eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imx1Y2EtdHVycmlvbmlAaG90bWFpbC5jb20iLCJzdGF0dXMiOiJVc2VyIiwiaWF0IjoxNzUzOTk5NTMyLCJleHAiOjE3NTY1OTE1MzJ9.cstmcN4-ODFZTkK94gvVBxIF5D-g1PT2Fe-cx3-Euhw
 
   const showDatePicker = () => {
     setDatePickerVisibility(true);
@@ -115,11 +125,8 @@ export default function RegisterScreen({ onFormSwitch, onSkip }) {
               <Text style={styles.submitButtonText}>Inscription</Text>
             </TouchableOpacity>
           </View>
-          <TouchableOpacity onPress={() => onFormSwitch("Login")}>
+          <TouchableOpacity onPress={() => navigation.navigate('Login')}>
             <Text style={styles.link}>Vous avez déjà un compte ? Connectez-vous</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={onSkip}>
-            <Text style={styles.link}>Skip</Text>
           </TouchableOpacity>
         </>
       )}

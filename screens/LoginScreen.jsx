@@ -4,10 +4,11 @@ import Constants from 'expo-constants';
 const API_URL = Constants.expoConfig.extra.API_URL;
 import styles from '../styles/LoginScreenStyles.jsx';
 
-function LoginScreen({ onFormSwitch, onSkip, onLoginSuccess }) {
+function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -67,11 +68,8 @@ function LoginScreen({ onFormSwitch, onSkip, onLoginSuccess }) {
               <Text style={styles.submitButtonText}>Connexion</Text>
             </TouchableOpacity>
           </View>
-          <TouchableOpacity onPress={() => onFormSwitch("Register")}>
+          <TouchableOpacity onPress={() => navigation.navigate('Register')}>
             <Text style={styles.link}>Pas de compte ? Inscrivez-vous</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={onSkip}>
-            <Text style={styles.link}>Skip</Text>
           </TouchableOpacity>
         </>
       )}

@@ -18,12 +18,15 @@ import * as Location from "expo-location";
 
 import { fetchMarkers } from "../api/Report.jsx";
 import MapComponent from "../components/Map.jsx";
-import User from "../api/User.jsx";
 import ProblemType from "../api/ProblemType.jsx";
 import colors from "../constants/colors.js";
 import styles from "../styles/HomeScreenStyles.jsx";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useSelector } from "react-redux";
 
 export default function HomeScreen({ navigation }) {
+  const {user} = useSelector(state => state.user);
+  console.log("User from Redux:", user);
   const [markers, setMarkers] = useState([]);
   const [region, setRegion] = useState(null);
   const [prevRegion, setPrevRegion] = useState({ latitude: 0, longitude: 0 });
@@ -32,7 +35,7 @@ export default function HomeScreen({ navigation }) {
   const [emergencyDegreeMax, setEmergencyDegreeMax] = useState(5);
   const [filterType, setFilterType] = useState([]);
   const [filterStatus, setFilterStatus] = useState(["1", "2"]);
-  const [userName, setUserName] = useState("Chargement...");
+  const [userName, setUserName] = useState(user.firstname + " " + user.lastname);
   const [modalOptionVisible, setModalOptionVisible] = useState(false);
   const [isFabOpen, setIsFabOpen] = useState(false);
   const [filter, setFilter] = useState(null);
@@ -223,7 +226,6 @@ export default function HomeScreen({ navigation }) {
       <View style={styles.container}>
         <View style={styles.topBar}>
           <View style={styles.profileSection}>
-            <User onNameFetched={handleNameFetched} />
             <Text style={styles.profileName}>{userName}</Text>
           </View>
           <Pressable style={styles.menuButton} onPress={() => setModalOptionVisible(true)}>
@@ -391,7 +393,13 @@ export default function HomeScreen({ navigation }) {
               <TouchableOpacity onPress={() => navigation.navigate("ContactScreen")}>
                 <Text style={styles.modalOptionText}>Contact</Text>
               </TouchableOpacity>
-              <Text style={styles.modalOptionText}>Déconnexion</Text>
+               <TouchableOpacity onPress={() => AsyncStorage.removeItem('tokenJWT').then(() => navigation.reset({
+                index: 0,
+                routes: [{ name: 'Login' }],
+              }))
+               }>
+               <Text style={styles.modalOptionText}>Déconnexion</Text>
+              </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => setModalOptionVisible(false)}
                 style={styles.modalOptioncloseButton}
