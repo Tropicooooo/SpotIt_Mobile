@@ -26,7 +26,6 @@ import { useSelector } from "react-redux";
 
 export default function HomeScreen({ navigation }) {
   const {user} = useSelector(state => state.user);
-  console.log("User from Redux:", user);
   const [markers, setMarkers] = useState([]);
   const [region, setRegion] = useState(null);
   const [prevRegion, setPrevRegion] = useState({ latitude: 0, longitude: 0 });
@@ -86,7 +85,6 @@ export default function HomeScreen({ navigation }) {
       });
 
       setMarkers(data);
-      console.log("Marqueurs mis à jour :", data);
     } catch (error) {
       console.error("Erreur lors de l'actualisation des marqueurs :", error);
     }
