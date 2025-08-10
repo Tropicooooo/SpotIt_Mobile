@@ -23,9 +23,11 @@ import colors from "../constants/colors.js";
 import styles from "../styles/HomeScreenStyles.jsx";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useSelector } from "react-redux";
+import { useDispatch } from 'react-redux';
+import { logout } from '../redux/userSlice.js';
 
 export default function HomeScreen({ navigation }) {
-  const {user} = useSelector(state => state.user);
+  const { user } = useSelector(state => state.user);
   const [markers, setMarkers] = useState([]);
   const [region, setRegion] = useState(null);
   const [prevRegion, setPrevRegion] = useState({ latitude: 0, longitude: 0 });
@@ -41,6 +43,7 @@ export default function HomeScreen({ navigation }) {
   const [tempEmergencyDegreeMin, setTempEmergencyDegreeMin] = useState(1);
   const [tempEmergencyDegreeMax, setTempEmergencyDegreeMax] = useState(5);
   const [checked, setChecked] = useState({});
+  const dispatch = useDispatch();
 
   const iconSize = 28;
 
@@ -387,16 +390,30 @@ export default function HomeScreen({ navigation }) {
             <View style={styles.modalOptionContent}>
               <TouchableOpacity onPress={() => navigation.navigate("aProposScreen")}>
                 <Text style={styles.modalOptionText}>À propos</Text>
-              </TouchableOpacity> 
+              </TouchableOpacity>
               <TouchableOpacity onPress={() => navigation.navigate("ContactScreen")}>
                 <Text style={styles.modalOptionText}>Contact</Text>
               </TouchableOpacity>
-               <TouchableOpacity onPress={() => AsyncStorage.removeItem('tokenJWT').then(() => navigation.reset({
-                index: 0,
-                routes: [{ name: 'Login' }],
-              }))
-               }>
-               <Text style={styles.modalOptionText}>Déconnexion</Text>
+              <TouchableOpacity
+                onPress={async () => {
+                  try {
+                    // 1. Supprimer le token
+                    await AsyncStorage.removeItem('tokenJWT');
+
+                    // 2. Réinitialiser Redux
+                    dispatch(logout());
+
+                    // 3. Rediriger vers la page de login
+                    navigation.reset({
+                      index: 0,
+                      routes: [{ name: 'Login' }], // ⚠ Mets ici exactement le nom de ta route
+                    });
+                  } catch (error) {
+                    console.error("Erreur lors de la déconnexion :", error);
+                  }
+                }}
+              >
+                <Text style={styles.modalOptionText}>Déconnexion</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => setModalOptionVisible(false)}
