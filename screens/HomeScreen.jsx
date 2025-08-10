@@ -397,17 +397,8 @@ export default function HomeScreen({ navigation }) {
               <TouchableOpacity
                 onPress={async () => {
                   try {
-                    // 1. Supprimer le token
                     await AsyncStorage.removeItem('tokenJWT');
-
-                    // 2. Réinitialiser Redux
                     dispatch(logout());
-
-                    // 3. Rediriger vers la page de login
-                    navigation.reset({
-                      index: 0,
-                      routes: [{ name: 'Login' }], // ⚠ Mets ici exactement le nom de ta route
-                    });
                   } catch (error) {
                     console.error("Erreur lors de la déconnexion :", error);
                   }
