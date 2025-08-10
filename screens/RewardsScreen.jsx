@@ -8,7 +8,7 @@ import Restaurant from '../api/Restaurant.jsx';
 import UserVoucher from '../api/UserVoucher.jsx';
 import Constants from 'expo-constants';
 const API_URL = Constants.expoConfig.extra.API_URL;
-const profileImage = require('../images/profile.jpg');
+import { useSelector } from 'react-redux';
 
 const RewardsScreen = () => {
   const [isCatalogue, setIsCatalogue] = useState(true);
@@ -18,7 +18,7 @@ const RewardsScreen = () => {
   const [userVouchers, setUserVouchers] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedReward, setSelectedReward] = useState(null);
-
+  const user = useSelector((state) => state.user.user);
   const handleAmusementParksFetched = (data) => setAmusementParks(data.amusementParks);
   const handleCinemasFetched = (data) => setCinemas(data.cinemas);
   const handleRestaurantsFetched = (data) => setRestaurants(data.restaurants);
@@ -31,11 +31,9 @@ const RewardsScreen = () => {
 
   const claimReward = () => {
     if (!selectedReward) {
-      console.log("Aucune récompense sélectionnée.");
       return;
     }
 
-    console.log(`Récompense prise : ${selectedReward.label}`);
 
     fetch(`http://${API_URL}:3001/user-vouchers`, {
       method: 'POST',
@@ -52,17 +50,12 @@ const RewardsScreen = () => {
     })
       .then(response => {
         if (!response.ok) {
-          console.error("Erreur dans la réponse de l'API:", response.status);
           throw new Error(`Erreur HTTP: ${response.status}`);
         }
         return response.json();
       })
       .then((data) => {
-        console.log('Voucher ajouté avec succès:', data);
         setUserVouchers(prevVouchers => [...prevVouchers, data]);
-      })
-      .catch((err) => {
-        console.error("Erreur lors de l'ajout du voucher :", err);
       });
 
     setModalVisible(false);
@@ -74,12 +67,7 @@ const RewardsScreen = () => {
       <Cinema onTypeFetched={handleCinemasFetched} />
       <Restaurant onTypeFetched={handleRestaurantsFetched} />
       <UserVoucher onTypeFetched={handleUserVouchersFetched} />
-
-      <View style={styles.header}>
-        <Image source={profileImage} style={styles.profileImage} />
-        <Text style={styles.userName}>Sophie</Text>
-      </View>
-
+      
       <View style={styles.toggleContainer}>
         <TouchableOpacity
           style={[styles.toggleButton, isCatalogue && styles.activeToggle]}

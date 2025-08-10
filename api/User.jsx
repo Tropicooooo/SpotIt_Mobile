@@ -9,7 +9,7 @@ function User({ onNameFetched }) {
     const fetchUser = async () => {
       try {
         const token = await AsyncStorage.getItem('tokenJWT');
-        const response = await fetch(`http://${API_URL}:3001/user/me`, {
+        const response = await fetch(`http://${API_URL}:3001/v1/user/me`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }

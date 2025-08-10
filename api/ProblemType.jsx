@@ -4,7 +4,7 @@ const API_URL = Constants.expoConfig.extra.API_URL;
 
 function ProblemType({ onTypeFetched }) {
   useEffect(() => {
-    fetch(`http://${API_URL}:3001/reportType`)
+    fetch(`http://${API_URL}:3001/v1/reportType`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);

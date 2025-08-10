@@ -32,8 +32,7 @@ export default function RegisterScreen({ navigation }) {
     }
     setLoading(true);
     try {
-      const url = `http://${API_URL}:3001/user/create`;
-      console.log("Sending POST to URL:", url);
+      const url = `http://${API_URL}:3001/v1/user/create`;
 
       const response = await fetch(url, {
         method: "POST",
@@ -54,15 +53,16 @@ export default function RegisterScreen({ navigation }) {
         }),
       });
 
-      console.log("Response status:", response.status);
       const userData = await response.json();
-      console.log("Response JSON:", userData);
 
       if (response.ok) {
         await AsyncStorage.setItem('tokenJWT', userData.token);
         dispatch(setUser(userData.user));
         alert("Inscription réussie !");
-        navigation.navigate('Login');
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'MainTabs' }],
+        });
       } else {
         alert("Erreur lors de l'inscription: " + (userData.code || JSON.stringify(userData)));
       }
@@ -137,14 +137,14 @@ export default function RegisterScreen({ navigation }) {
 
             <Text style={styles.label}>Ville</Text>
             <TextInputField
-              placeholder="Paris"
+              placeholder="Namur"
               value={cityLabel}
               onChangeText={setCityLabel}
             />
 
             <Text style={styles.label}>Code postal</Text>
             <TextInputField
-              placeholder="75001"
+              placeholder="5000"
               value={postalCode}
               onChangeText={setPostalCode}
               keyboardType="numeric"

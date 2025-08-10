@@ -5,7 +5,7 @@ const API_URL = Constants.expoConfig.extra.API_URL;
 
 function Cinema({ onTypeFetched }) {
     useEffect(() => {
-        fetch(`http://${API_URL}:3001/cinema/`)
+        fetch(`http://${API_URL}:3001/v1/cinema/`)
         .then((response) => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);

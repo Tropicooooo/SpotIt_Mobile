@@ -3,7 +3,7 @@ import Constants from 'expo-constants';
 const API_URL = Constants.expoConfig.extra.API_URL;
 function Restaurant({ onTypeFetched }) {
     useEffect(() => {
-        fetch(`http://${API_URL}:3001/restaurant/`)
+        fetch(`http://${API_URL}:3001/v1/restaurant/`)
         .then((response) => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);

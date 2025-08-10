@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View,ActivityIndicator } from 'react-native';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -7,8 +7,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import Constants from 'expo-constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const API_URL = Constants.expoConfig.extra.API_URL;
 import HomeScreen from './screens/HomeScreen';
 import LeaderboardScreen from './screens/LeaderboardScreen';
 import ProfileScreen from './screens/ProfileScreen';
@@ -16,40 +16,40 @@ import RewardsScreen from './screens/RewardsScreen';
 import ReportScreen from './screens/ReportScreen';
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
-import LoadingScreen from './screens/LoadingScreen';
 import ReportInfoScreen from './screens/ReportInfoScreen';
 
 import colors from './constants/colors';
 import { setUser } from './redux/userSlice';
-import {store} from './redux/store';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { store } from './redux/store';
+
+const API_URL = Constants.expoConfig.extra.API_URL;
+
 const Tab = createBottomTabNavigator();
-const HomeStack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator();
 const iconSize = 28;
 
+// Stack pour l’accueil + rapports
 function HomeStackScreen() {
   return (
-    <HomeStack.Navigator screenOptions={{ headerShown: false }}>
-      <HomeStack.Screen name="HomeScreen" component={HomeScreen} />
-      <HomeStack.Screen name="Report" component={ReportScreen} />
-      <HomeStack.Screen name="ReportInfo" component={ReportInfoScreen} />
-    </HomeStack.Navigator>
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="HomeScreen" component={HomeScreen} />
+      <Stack.Screen name="Report" component={ReportScreen} />
+      <Stack.Screen name="ReportInfo" component={ReportInfoScreen} />
+    </Stack.Navigator>
   );
 }
 
+// Stack pour authentification
 function AuthStack() {
   return (
-    <HomeStack.Navigator screenOptions={{ headerShown: false }}>
-       <HomeStack.Screen name="Login">
-        {props => <LoginScreen {...props}/>}
-      </HomeStack.Screen>
-      <HomeStack.Screen name="Register">
-        {props => <RegisterScreen {...props}/>}
-      </HomeStack.Screen>
-    </HomeStack.Navigator>
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Screen name="Register" component={RegisterScreen} />
+    </Stack.Navigator>
   );
 }
 
+// Onglets principaux
 function MainTabs() {
   return (
     <Tab.Navigator
@@ -88,60 +88,69 @@ function MainTabs() {
   );
 }
 
-function AppContent() {
+// Navigation racine qui décide entre AuthStack et MainTabs
+function RootNavigator() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.user);
-  const [status, setStatus] = useState('loading');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
- 
     async function checkAuth() {
       const token = await AsyncStorage.getItem('tokenJWT');
-      console.log("Checking authentication with token:", token);
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
       try {
-        const response = await fetch(`http://${API_URL}:3001/user/me`, {
+        const response = await fetch(`http://${API_URL}:3001/v1/user/me`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`,
           },
-          credentials: 'include',
         });
-        if (!response.ok) {
 
-          setStatus('unauthenticated');
+        if (!response.ok) {
+          setLoading(false);
           return;
         }
 
         const data = await response.json();
-        console.log("User data fetched:", data);
         dispatch(setUser(data));
-        setStatus('authenticated');
       } catch (error) {
         console.error("Error checking authentication:", error);
-        setStatus('unauthenticated');
       }
+      setLoading(false);
     }
+
     checkAuth();
   }, [dispatch]);
 
-  if (status === 'loading') {
-    return <LoadingScreen />;
-  }
+  if (loading) return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <ActivityIndicator size="large" color={colors.primary} />
+    </View>
+  )
 
-  if (status === 'unauthenticated') {
-    return <AuthStack />;
-  }
-
-  return <MainTabs />;
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      {user ? (
+        <Stack.Screen name="MainTabs" component={MainTabs} />
+      ) : (
+        <Stack.Screen name="AuthStack" component={AuthStack} />
+      )}
+    </Stack.Navigator>
+  );
 }
 
+// App principale
 export default function App() {
   return (
     <Provider store={store}>
       <ActionSheetProvider>
         <NavigationContainer>
-          <AppContent />
+          <RootNavigator />
         </NavigationContainer>
       </ActionSheetProvider>
     </Provider>

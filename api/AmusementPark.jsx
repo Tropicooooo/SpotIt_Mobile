@@ -5,7 +5,7 @@ const API_URL = Constants.expoConfig.extra.API_URL;
 
 function AmusementPark({ onTypeFetched }) {
     useEffect(() => {
-        fetch(`http://${API_URL}:3001/amusement-park/`)
+        fetch(`http://${API_URL}:3001/v1/amusement-park/`)
         .then((response) => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);

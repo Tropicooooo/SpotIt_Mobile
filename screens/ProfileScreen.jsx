@@ -30,7 +30,9 @@ export default function ProfileScreen() {
 
   const getUser = async () => {
     const token = await AsyncStorage.getItem('tokenJWT');
-    const response = await fetch(`http://${API_URL}:3001/user/me`, {
+    console.log("Token JWT:", token);
+    const response = await fetch(`http://${API_URL}:3001/v1/user/me`, {
+      method: "GET",
       headers: {
         'Authorization': `Bearer ${token}`
       }

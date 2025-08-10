@@ -12,23 +12,11 @@ export default StyleSheet.create({
     padding: 16,
   },
 
-  profileImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-  },
-
-  userName: {
-    marginLeft: 12,
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333333',
-  },
-
   toggleContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     marginVertical: 16,
+    marginTop: "15%",
   },
 
   toggleButton: {

@@ -132,7 +132,7 @@ export default function ReportScreen({ navigation }) {
     formData.append('status', 'En attente');
 
     try {
-      const response = await fetch(`http://${API_URL}:3001/report`, {
+      const response = await fetch(`http://${API_URL}:3001/v1/report`, {
         method: 'POST',
         body: formData,
       });

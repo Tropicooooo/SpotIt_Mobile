@@ -11,7 +11,7 @@ export default function LeaderboardScreen() {
   useEffect(() => {
     const fetchLeaderboard = async () => {
       try {
-        const response = await fetch(`http://${API_URL}:3001/leaderboard`);
+        const response = await fetch(`http://${API_URL}:3001/v1/leaderboard`);
         const data = await response.json();
 
         if (data && data.length > 0) {

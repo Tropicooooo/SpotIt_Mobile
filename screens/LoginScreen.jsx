@@ -18,7 +18,6 @@ function LoginScreen({ navigation }) {
     try {
       await AsyncStorage.setItem("tokenJWT", data.token);
       dispatch(setUser(data.user));
-      navigation.navigate("Home"); // adapte l'écran cible ici
     } catch (error) {
       console.error("Erreur stockage token:", error);
       Alert.alert("Erreur lors de la connexion");
@@ -32,24 +31,18 @@ function LoginScreen({ navigation }) {
     }
     setLoading(true);
     try {
-      const response = await fetch(`http://${API_URL}:3001/user/login`, {
+      const response = await fetch(`http://${API_URL}:3001/v1/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, password }),
-      })
+      });
 
-        .then(res => res.text()) // <-- on lit comme texte d'abord
-        .then(txt => {
-          console.log("Réponse brute :", txt);
-        })
-        .catch(err => console.error("Erreur réseau :", err));
-      ;
       const data = await response.json();
-
       if (response.ok) {
         onLoginSuccess(data);
+    
       } else {
         Alert.alert(data.message || "Email ou mot de passe incorrect");
       }

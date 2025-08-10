@@ -1,11 +1,12 @@
 import { useEffect } from "react";
 import Constants from 'expo-constants';
 const API_URL = Constants.expoConfig.extra.API_URL;
-const user = "sophie.martin@free.be";
+import { useSelector } from "react-redux";
 
 function UserVoucher({ onTypeFetched }) {
+      const user = useSelector((state) => state.user.user);
     useEffect(() => {
-        fetch(`http://${API_URL}:3001/user-voucher?email=${encodeURIComponent(user)}`)
+        fetch(`http://${API_URL}:3001/v1/user-voucher?email=${encodeURIComponent(user.email)}`)
         .then((response) => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);

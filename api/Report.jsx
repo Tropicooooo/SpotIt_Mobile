@@ -17,7 +17,7 @@ export const fetchMarkers = async ({ region, filterType = null, filterStatus = n
   const lngMax = longitude + longitudeDelta / 2;
 
   // Construction de la base de l'URL
-  let url = `http://${API_URL}:3001/report?latMin=${latMin}&latMax=${latMax}&lngMin=${lngMin}&lngMax=${lngMax}`;
+  let url = `http://${API_URL}:3001/v1/report?latMin=${latMin}&latMax=${latMax}&lngMin=${lngMin}&lngMax=${lngMax}`;
   // Ajout des filtres conditionnels
   const filters = [];
   if (filterType) filters.push(`type=${filterType}`);
