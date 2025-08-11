@@ -30,7 +30,6 @@ export default function ProfileScreen() {
 
   const getUser = async () => {
     const token = await AsyncStorage.getItem('tokenJWT');
-    console.log("Token JWT:", token);
     const response = await fetch(`http://${API_URL}:3001/v1/user/me`, {
       method: "GET",
       headers: {
@@ -84,7 +83,7 @@ export default function ProfileScreen() {
 
   const submitForm = async () => {
     const token = await AsyncStorage.getItem('tokenJWT');
-    await fetch(`http://${API_URL}:3001/user/me${formUser?.password ? "" : "WithoutPassword"}`, {
+    await fetch(`http://${API_URL}:3001/v1/user/me${formUser?.password ? "" : "WithoutPassword"}`, {
       method: "PATCH",
       headers: {
         'Content-Type': 'application/json',

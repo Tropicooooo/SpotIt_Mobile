@@ -89,7 +89,6 @@ const MapComponent = ({ markers, loading, onRegionChangeComplete, scrollEnabled,
   }, [region]);
 
   const openReportModal = (marker) => {
-    console.log(marker);
     setSelectedMarker(marker);
 
     setReportInfoModal(true);

@@ -7,10 +7,10 @@ import MapComponent from '../components/Map';
 import * as Location from 'expo-location';
 import colors from '../constants/colors';
 import ProblemType from '../api/ProblemType';
-import { reverseGeocode } from '../utils/utils';
 import Constants from 'expo-constants';
 const API_URL = Constants.expoConfig.extra.API_URL;
 import styles from '../styles/ReportScreenStyles.jsx';
+import { useSelector } from 'react-redux';
 
 const iconSize = 28;
 
@@ -22,6 +22,7 @@ export default function ReportScreen({ navigation }) {
   const [problemTypes, setProblemTypes] = useState([]);
   const { showActionSheetWithOptions } = useActionSheet();
   const [checked, setChecked] = useState({});
+  const user = useSelector((state) => state.user.user);
 
   useEffect(() => {
     const getLocation = async () => {
@@ -121,7 +122,7 @@ export default function ReportScreen({ navigation }) {
     });
     formData.append('description', description);
     formData.append('geocodedaddress', address);
-    formData.append('userEmail', 'alice.smith@gmail.com');
+    formData.append('userEmail', user.email);
 
     const selectedIndex = Object.keys(checked).find(key => checked[key]);
     if (selectedIndex) {
@@ -136,7 +137,6 @@ export default function ReportScreen({ navigation }) {
         method: 'POST',
         body: formData,
       });
-
     } catch (error) {
       console.error('Erreur d\'envoi des données', error);
     } finally {
