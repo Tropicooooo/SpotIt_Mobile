@@ -9,6 +9,7 @@ import UserVoucher from '../api/UserVoucher.jsx';
 import Constants from 'expo-constants';
 const API_URL = Constants.expoConfig.extra.API_URL;
 import { useSelector } from 'react-redux';
+import dayjs from 'dayjs';
 
 const RewardsScreen = () => {
   const [isCatalogue, setIsCatalogue] = useState(true);
@@ -34,18 +35,17 @@ const RewardsScreen = () => {
       return;
     }
 
-
-    fetch(`http://${API_URL}:3001/user-vouchers`, {
+    fetch(`http://${API_URL}:3001/v1/user-voucher`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        email: "sophie.martin@free.be",
-        label: selectedReward.label,
-        description: selectedReward.description,
-        points_number: selectedReward.pointsNumber,
-        picture: selectedReward.picture
+        code: Math.floor(100000 + Math.random() * 900000),
+        claimDate: dayjs().toISOString(),
+        expirationDate: dayjs().add(1, 'year').toISOString(),
+        userEmail: user.email,
+        voucherLabel: selectedReward.label
       }),
     })
       .then(response => {
@@ -145,10 +145,10 @@ const RewardsScreen = () => {
               <View key={index} style={styles.rewardBox}>
                 <Text style={styles.rewardBoxText}>{voucher.voucherLabel}</Text>
                 <Text style={styles.expirationDate}>
-                  Date de réclamation : {new Date(voucher.claimDate).toLocaleDateString()}
+                  Date de réclamation : {dayjs(voucher.claimDate).format('DD/MM/YYYY')}
                 </Text>
                 <Text style={styles.expirationDate}>
-                  Date d'expiration : {new Date(voucher.expirationDate).toLocaleDateString()}
+                  Date d'expiration : {dayjs(voucher.expirationDate).format('DD/MM/YYYY')}
                 </Text>
                 <QRCode value={`Code: ${voucher.code}`} size={150} style={styles.qrCode} />
               </View>
