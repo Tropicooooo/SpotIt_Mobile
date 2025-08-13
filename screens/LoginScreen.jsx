@@ -53,10 +53,6 @@ function LoginScreen({ navigation }) {
     setLoading(false);
   };
 
-  const handleForgotPassword = () => {
-    Alert.alert("Fonctionnalité indisponible pour le moment");
-  };
-
   return (
     <View style={styles.container}>
       <Image source={require("../assets/logo.png")} style={styles.logo} />
@@ -83,9 +79,6 @@ function LoginScreen({ navigation }) {
               placeholder="********"
               secureTextEntry
             />
-            <TouchableOpacity onPress={handleForgotPassword}>
-              <Text style={styles.forgotPassword}>Mot de passe oublié</Text>
-            </TouchableOpacity>
             <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
               <Text style={styles.submitButtonText}>Connexion</Text>
             </TouchableOpacity>
