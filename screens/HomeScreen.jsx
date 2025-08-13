@@ -388,10 +388,10 @@ export default function HomeScreen({ navigation }) {
         >
           <View style={styles.modalOptionContainer}>
             <View style={styles.modalOptionContent}>
-              <TouchableOpacity onPress={() => navigation.navigate("aProposScreen")}>
+              <TouchableOpacity onPress={() => navigation.navigate("About")}>
                 <Text style={styles.modalOptionText}>À propos</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => navigation.navigate("ContactScreen")}>
+              <TouchableOpacity onPress={() => navigation.navigate("Contact")}>
                 <Text style={styles.modalOptionText}>Contact</Text>
               </TouchableOpacity>
               <TouchableOpacity

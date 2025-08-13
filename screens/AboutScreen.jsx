@@ -4,7 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Provider } from "react-native-paper";
 import styles from "../styles/AProposScreenStyles.jsx";
 
-export default function aProposScreen({ navigation }) {
+export default function AboutScreen({ navigation }) {
   return (
     <Provider>
       <View style={styles.container}>

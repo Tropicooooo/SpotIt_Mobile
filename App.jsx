@@ -17,6 +17,8 @@ import ReportScreen from './screens/ReportScreen';
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import ReportInfoScreen from './screens/ReportInfoScreen';
+import AboutScreen from './screens/AboutScreen';
+import ContactScreen from './screens/ContactScreen';
 
 import colors from './constants/colors';
 import { setUser } from './redux/userSlice';
@@ -35,6 +37,8 @@ function HomeStackScreen() {
       <Stack.Screen name="HomeScreen" component={HomeScreen} />
       <Stack.Screen name="Report" component={ReportScreen} />
       <Stack.Screen name="ReportInfo" component={ReportInfoScreen} />
+      <Stack.Screen name="About" component={AboutScreen} />
+      <Stack.Screen name="Contact" component={ContactScreen} />
     </Stack.Navigator>
   );
 }
