@@ -50,8 +50,11 @@ const RewardsScreen = () => {
     })
       .then(response => {
         if (!response.ok) {
-          throw new Error(`Erreur HTTP: ${response.status}`);
+          alert("Fonds insuffisants.");
+        } else {
+          alert('Félicitations ! Votre bon a été ajouté à votre inventaire.');
         }
+
         return response.json();
       })
       .then((data) => {
